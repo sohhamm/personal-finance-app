@@ -1,0 +1,36 @@
+.authContainer {
+  display: grid;
+  grid-template-columns: 560px 1fr;
+  background: var(--color-beige-100);
+  height: 100dvh;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.illustrationContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-250);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.illustrationImage {
+  border-radius: 12px;
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+}
+
+.formContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-250);
+}

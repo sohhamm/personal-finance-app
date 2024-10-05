@@ -1,8 +1,9 @@
 import {lazy, Suspense} from 'react'
-import {createRootRoute, Link, Outlet} from '@tanstack/react-router'
+import {createRootRouteWithContext, Outlet} from '@tanstack/react-router'
+import type {QueryClient} from '@tanstack/react-query'
 
-const TanStackRouterDevtools =
-  import.meta.env.NODE_ENV === 'production'
+const RouterDevtools =
+  import.meta.env.ENV === 'production'
     ? () => null
     : lazy(() =>
         import('@tanstack/router-devtools').then(res => ({
@@ -12,16 +13,27 @@ const TanStackRouterDevtools =
         })),
       )
 
-export const Route = createRootRoute({
+const QueryDevtools =
+  import.meta.env.ENV === 'production'
+    ? () => null
+    : lazy(() =>
+        import('@tanstack/react-query-devtools').then(res => ({
+          default: res.ReactQueryDevtools,
+        })),
+      )
+
+export const Route = createRootRouteWithContext<{
+  isAuthenticated: boolean
+  queryClient: QueryClient
+}>()({
   component: () => (
     <>
-      <div>
-        <Link to='/'>Home</Link> <Link to='/about'>About</Link>
-      </div>
-      <hr />
       <Outlet />
       <Suspense>
-        <TanStackRouterDevtools />
+        <RouterDevtools />
+      </Suspense>
+      <Suspense>
+        <QueryDevtools />
       </Suspense>
     </>
   ),
