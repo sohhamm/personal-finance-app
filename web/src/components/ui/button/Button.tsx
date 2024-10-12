@@ -8,6 +8,7 @@ interface ButtonProps {
   onClick?: () => void
   isIcon?: boolean
   disabled?: boolean
+  type?: React.ButtonHTMLAttributes<HTMLButtonElement>['type']
 }
 
 export default function Button({
@@ -16,6 +17,7 @@ export default function Button({
   onClick,
   isIcon = false,
   disabled = false,
+  type = 'button',
 }: ButtonProps) {
   return (
     <button
@@ -27,6 +29,7 @@ export default function Button({
       )}
       onClick={onClick}
       disabled={disabled}
+      type={type}
     >
       {children}
     </button>
