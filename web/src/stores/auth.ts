@@ -21,10 +21,9 @@ export const setAccessToken = (token: string | undefined) => {
     if (token) {
       StorageService.setAccessToken(token)
       return {accessToken: token, isAuthenticated: true}
-    } else {
-      StorageService.removeAuthTokens()
-      return {accessToken: undefined, isAuthenticated: false}
     }
+    StorageService.removeAuthTokens()
+    return {accessToken: undefined, isAuthenticated: false}
   })
 }
 

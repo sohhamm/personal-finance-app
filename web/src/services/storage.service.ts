@@ -43,10 +43,10 @@ export const StorageService = {
 
 const _storage = {
   getItem<T = unknown>(key: string, fromSessionStorage = false): T | undefined {
-    key = generateKey(key)
+    const _key = generateKey(key)
     const storage = selectStorage(fromSessionStorage)
 
-    const val = storage.getItem(key)
+    const val = storage.getItem(_key)
 
     if (val === null) return undefined
 
@@ -59,22 +59,22 @@ const _storage = {
   },
 
   setItem<T>(key: string, value: T, saveToSessionStorage = false): void {
-    key = generateKey(key)
+    const _key = generateKey(key)
     const storage = selectStorage(saveToSessionStorage)
 
     if (value === undefined || value === null) {
-      storage.removeItem(key)
+      storage.removeItem(_key)
       return
     }
 
     const valueToStore = typeof value === 'object' ? JSON.stringify(value) : (value as string)
-    storage.setItem(key, valueToStore)
+    storage.setItem(_key, valueToStore)
   },
 
   removeItem(key: string, fromSessionStorage = false): void {
-    key = generateKey(key)
+    const _key = generateKey(key)
     const storage = selectStorage(fromSessionStorage)
-    storage.removeItem(key)
+    storage.removeItem(_key)
   },
 }
 

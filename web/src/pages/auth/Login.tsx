@@ -1,10 +1,12 @@
 import * as React from 'react'
 import classes from './auth.module.css'
+import {cx} from '@/utils/cx'
 
-interface LoginProps {
-  a?: string
-}
-
-export default function Login({a}: LoginProps) {
-  return <div className={classes.box}>Login</div>
+export default function Login() {
+  return (
+    <div className={classes.box}>
+      <h1 className={'text-preset-1'}>Login</h1>
+      <div className={classes.fields}></div>
+    </div>
+  )
 }

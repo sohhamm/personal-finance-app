@@ -9,7 +9,9 @@ export default function AuthLayout() {
         <img src={illustration} alt='auth illustration' className={classes.illustrationImage} />
       </div>
       <div className={classes.formContainer}>
-        <Outlet />
+        <div className={classes.form}>
+          <Outlet />
+        </div>
       </div>
     </div>
   )

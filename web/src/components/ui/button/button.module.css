@@ -1,0 +1,63 @@
+:root {
+  --button-padding: var(--spacing-200);
+  --button-font-weight: 500;
+  --button-font-size: 16px;
+  --button-border-radius: var(--spacing-100);
+  --button-transition: all 0.3s ease-in-out;
+}
+
+/* Shared button styles */
+.button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-200);
+  padding: var(--button-padding);
+  justify-content: center;
+  border-radius: var(--button-border-radius);
+  font-weight: var(--button-font-weight);
+  font-size: var(--button-font-size);
+  cursor: pointer;
+  border: none;
+  transition: var(--button-transition);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.primary {
+  background: var(--color-grey-900);
+  color: var(--color-white);
+}
+
+.secondary {
+  background: var(--color-white);
+  color: var(--color-grey-500);
+  border: 1px solid var(--color-grey-500);
+}
+
+.tertiary {
+  background: none;
+  color: var(--color-grey-900);
+  padding: 0;
+}
+
+.danger {
+  background: var(--color-red);
+  color: var(--color-white);
+}
+
+/* icon buttons */
+.iconButton {
+  padding: var(--spacing-100);
+  width: auto;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
