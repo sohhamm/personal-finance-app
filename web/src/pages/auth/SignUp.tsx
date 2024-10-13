@@ -1,27 +1,28 @@
 import * as React from 'react'
 import Button from '@/components/ui/button/Button'
 import classes from './auth.module.css'
-import {Link} from '@tanstack/react-router'
+import {Link, useNavigate} from '@tanstack/react-router'
 import {useForm} from '@tanstack/react-form'
 import {zodValidator} from '@tanstack/zod-form-adapter'
 import {useMutation} from '@tanstack/react-query'
 import {Eye, EyeSlash} from '@phosphor-icons/react'
 import {InputField} from '@/components/ui/input-field/InputField'
 import {signupSchema} from './schema'
-import {setAccessToken} from '@/stores/auth'
 import {signUp} from '@/services/auth.service'
 
 export default function Signup() {
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = React.useState(false)
 
   const signupMutation = useMutation({
     mutationFn: signUp,
     onSuccess: data => {
-      console.log('Signup successful', data)
-      setAccessToken(data)
+      if (data) {
+        navigate({to: '/overview'})
+      }
     },
-    onError: error => {
-      console.error('Signup failed', error)
+    onError: err => {
+      console.error('Signup failed', err)
     },
   })
 

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Button from '@/components/ui/button/Button'
 import classes from './auth.module.css'
-import {Link} from '@tanstack/react-router'
+import {Link, useNavigate} from '@tanstack/react-router'
 import {useForm} from '@tanstack/react-form'
 import {zodValidator} from '@tanstack/zod-form-adapter'
 import {useMutation} from '@tanstack/react-query'
@@ -10,19 +10,20 @@ import {Eye, EyeSlash} from '@phosphor-icons/react'
 import {InputField} from '@/components/ui/input-field/InputField'
 import {loginSchema} from './schema'
 import {login} from '@/services/auth.service'
-import {setAccessToken} from '@/stores/auth'
 
 export default function Login() {
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = React.useState(false)
 
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: data => {
-      console.log('Login successful', data)
-      setAccessToken(data)
+      if (data) {
+        navigate({to: '/overview'})
+      }
     },
-    onError: error => {
-      console.error('Login failed', error)
+    onError: err => {
+      console.error('Login failed', err)
     },
   })
 

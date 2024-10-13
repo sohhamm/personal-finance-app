@@ -5,7 +5,7 @@ const envSchema = z.object({
 })
 
 const envVars = {
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
+  apiBaseUrl: import.meta.env.VITE_API_URL,
 }
 
 const parsedEnv = envSchema.safeParse(envVars)
