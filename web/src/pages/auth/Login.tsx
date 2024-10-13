@@ -8,23 +8,18 @@ import {useMutation} from '@tanstack/react-query'
 import {z} from 'zod'
 import {Eye, EyeSlash} from '@phosphor-icons/react'
 import {InputField} from '@/components/ui/input-field/InputField'
-import {LoginFormValues, loginSchema} from './schema'
-
-const loginApi = async (credentials: LoginFormValues) => {
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  if (credentials.email === 'error@example.com') {
-    throw new Error('Invalid credentials')
-  }
-  return {success: true, user: {email: credentials.email}}
-}
+import {loginSchema} from './schema'
+import {login} from '@/services/auth.service'
+import {setAccessToken} from '@/stores/auth'
 
 export default function Login() {
   const [showPassword, setShowPassword] = React.useState(false)
 
   const loginMutation = useMutation({
-    mutationFn: loginApi,
+    mutationFn: login,
     onSuccess: data => {
       console.log('Login successful', data)
+      setAccessToken(data)
     },
     onError: error => {
       console.error('Login failed', error)
@@ -37,7 +32,7 @@ export default function Login() {
       password: '',
     },
     onSubmit: async ({value}) => {
-      await loginMutation.mutateAsync(value as LoginFormValues)
+      await loginMutation.mutateAsync(value)
     },
     validatorAdapter: zodValidator(),
   })

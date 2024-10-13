@@ -7,29 +7,21 @@ import {zodValidator} from '@tanstack/zod-form-adapter'
 import {useMutation} from '@tanstack/react-query'
 import {Eye, EyeSlash} from '@phosphor-icons/react'
 import {InputField} from '@/components/ui/input-field/InputField'
-import {SignupFormValues, signupSchema} from './schema'
-
-const signupApi = async (userData: SignupFormValues) => {
-  // Simulating API call
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  if (userData.email === 'taken@example.com') {
-    throw new Error('Email is already taken')
-  }
-  return {success: true, user: {name: userData.name, email: userData.email}}
-}
+import {signupSchema} from './schema'
+import {setAccessToken} from '@/stores/auth'
+import {signUp} from '@/services/auth.service'
 
 export default function Signup() {
   const [showPassword, setShowPassword] = React.useState(false)
 
   const signupMutation = useMutation({
-    mutationFn: signupApi,
+    mutationFn: signUp,
     onSuccess: data => {
       console.log('Signup successful', data)
-      // Handle successful signup (e.g., redirect, set auth state)
+      setAccessToken(data)
     },
     onError: error => {
       console.error('Signup failed', error)
-      // Handle signup error (e.g., show error message)
     },
   })
 
@@ -40,7 +32,7 @@ export default function Signup() {
       password: '',
     },
     onSubmit: async ({value}) => {
-      await signupMutation.mutateAsync(value as SignupFormValues)
+      await signupMutation.mutateAsync(value)
     },
     validatorAdapter: zodValidator(),
   })
