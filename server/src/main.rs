@@ -1,6 +1,7 @@
 mod config;
 mod db;
 mod handlers;
+mod migrations;
 mod models;
 mod routes;
 mod utils;
@@ -13,6 +14,11 @@ async fn main() {
     dotenvy::dotenv().ok();
 
     let pool = db::init_db().await.expect("Failed to connect to database");
+
+    // Run migrations
+    migrations::run_migrations(&pool)
+        .await
+        .expect("Failed to run migrations");
 
     let app = routes::create_router(pool);
 

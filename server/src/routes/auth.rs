@@ -1,10 +1,8 @@
-use axum::{
-    routing::post,
-    Router,
-};
-use crate::handlers::auth::{signup, login, reset_password_request, reset_password};
+use crate::handlers::auth::{login, reset_password, reset_password_request, signup};
+use axum::{routing::post, Router};
+use sqlx::PgPool;
 
-pub fn auth_routes() -> Router {
+pub fn auth_routes() -> Router<PgPool> {
     Router::new()
         .route("/signup", post(signup))
         .route("/login", post(login))

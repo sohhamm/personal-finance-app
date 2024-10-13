@@ -1,18 +1,13 @@
-use axum::{
-    extract::State,
-    http::StatusCode,
-    Json,
+use crate::models::user::{
+    LoginPayload, ResetPasswordPayload, ResetPasswordRequestPayload, SignupPayload, User,
 };
-use sqlx::PgPool;
-use argon2::{
-    password_hash::{
-        rand_core::OsRng,
-        PasswordHash, PasswordHasher, PasswordVerifier, SaltString
-    },
-    Argon2
-};
-use crate::models::user::{User, SignupPayload, LoginPayload, ResetPasswordRequestPayload, ResetPasswordPayload};
 use crate::utils::jwt::{create_token, verify_token};
+use argon2::{
+    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    Argon2,
+};
+use axum::{extract::State, http::StatusCode, Json};
+use sqlx::PgPool;
 
 pub async fn signup(
     State(pool): State<PgPool>,
@@ -20,7 +15,8 @@ pub async fn signup(
 ) -> Result<(StatusCode, Json<String>), (StatusCode, String)> {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
-    let password_hash = argon2.hash_password(payload.password.as_bytes(), &salt)
+    let password_hash = argon2
+        .hash_password(payload.password.as_bytes(), &salt)
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .to_string();
 
@@ -35,8 +31,8 @@ pub async fn signup(
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    let token = create_token(user.id)
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let token =
+        create_token(user.id).map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     Ok((StatusCode::CREATED, Json(token)))
 }
@@ -45,24 +41,21 @@ pub async fn login(
     State(pool): State<PgPool>,
     Json(payload): Json<LoginPayload>,
 ) -> Result<(StatusCode, Json<String>), (StatusCode, String)> {
-    let user = sqlx::query_as!(
-        User,
-        "SELECT * FROM users WHERE email = $1",
-        payload.email
-    )
-    .fetch_optional(&pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
-    .ok_or((StatusCode::UNAUTHORIZED, "Invalid credentials".to_string()))?;
+    let user = sqlx::query_as!(User, "SELECT * FROM users WHERE email = $1", payload.email)
+        .fetch_optional(&pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+        .ok_or((StatusCode::UNAUTHORIZED, "Invalid credentials".to_string()))?;
 
     let parsed_hash = PasswordHash::new(&user.password_hash)
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    Argon2::default().verify_password(payload.password.as_bytes(), &parsed_hash)
+    Argon2::default()
+        .verify_password(payload.password.as_bytes(), &parsed_hash)
         .map_err(|_| (StatusCode::UNAUTHORIZED, "Invalid credentials".to_string()))?;
 
-    let token = create_token(user.id)
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let token =
+        create_token(user.id).map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     Ok((StatusCode::OK, Json(token)))
 }
@@ -71,14 +64,10 @@ pub async fn reset_password_request(
     State(pool): State<PgPool>,
     Json(payload): Json<ResetPasswordRequestPayload>,
 ) -> Result<StatusCode, (StatusCode, String)> {
-    let user = sqlx::query_as!(
-        User,
-        "SELECT * FROM users WHERE email = $1",
-        payload.email
-    )
-    .fetch_optional(&pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let user = sqlx::query_as!(User, "SELECT * FROM users WHERE email = $1", payload.email)
+        .fetch_optional(&pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     if user.is_some() {
         // In a real app, send an email with a reset link
@@ -98,7 +87,8 @@ pub async fn reset_password(
 
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
-    let password_hash = argon2.hash_password(payload.new_password.as_bytes(), &salt)
+    let password_hash = argon2
+        .hash_password(payload.new_password.as_bytes(), &salt)
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .to_string();
 
