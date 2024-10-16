@@ -16,10 +16,13 @@ async fn main() {
     let pool = db::init_db().await.expect("Failed to connect to database");
 
     // Run migrations
-    migrations::run_migrations(&pool)
-        .await
-        .expect("Failed to run migrations");
-
+    if let Err(e) = migrations::run_migrations(&pool).await {
+        eprintln!("Failed to run migrations: {:?}", e);
+        // Decide whether to panic or continue based on your requirements
+        // panic!("Failed to run migrations");
+    } else {
+        println!("Migrations completed successfully");
+    }
     let app = routes::create_router(pool);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));

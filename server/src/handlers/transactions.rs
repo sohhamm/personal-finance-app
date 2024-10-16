@@ -1,3 +1,5 @@
+use crate::models::transaction::{CreateTransactionPayload, Transaction, UpdateTransactionPayload};
+use crate::utils::jwt::AuthUser;
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
@@ -7,9 +9,6 @@ use chrono::Utc;
 use serde::Deserialize;
 use sqlx::PgPool;
 use uuid::Uuid;
-
-use crate::models::transaction::{CreateTransactionPayload, Transaction, UpdateTransactionPayload};
-use crate::utils::jwt::AuthUser;
 
 #[derive(Debug, Deserialize)]
 pub struct TransactionQuery {
@@ -90,7 +89,11 @@ pub async fn create_transaction(
     .bind(Utc::now())
     .fetch_one(&pool)
     .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+    // .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     Ok(Json(transaction))
 }

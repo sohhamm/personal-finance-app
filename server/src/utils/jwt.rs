@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use uuid::Uuid;
 
+use crate::config::Config;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
     pub sub: Uuid,
@@ -30,7 +32,9 @@ pub fn create_token(user_id: Uuid) -> Result<String, jsonwebtoken::errors::Error
         exp: expiration as usize,
     };
 
-    let secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
+    let config = Config::from_env();
+    let secret = &config.jwt_secret;
+
     encode(
         &Header::default(),
         &claims,
