@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import {z} from 'zod'
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -9,6 +9,6 @@ const envSchema = z.object({
   BCRYPT_ROUNDS: z.string().transform(Number).default('12'),
   RATE_LIMIT_WINDOW_MS: z.string().transform(Number).default('900000'),
   RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).default('100'),
-});
+})
 
-export const env = envSchema.parse(process.env);
+export const env = envSchema.parse(process.env)

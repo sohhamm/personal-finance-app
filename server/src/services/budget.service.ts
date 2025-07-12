@@ -1,148 +1,153 @@
-import { sql, Budget } from '@/db';
-import { AppError } from '@/middleware/error';
-import { Logger } from '@/utils/logger';
-import { CreateBudgetRequest, UpdateBudgetRequest } from '@/types/api';
+import {sql} from '@/db'
+import type {Budget} from '@/db'
+import {AppError} from '@/middleware/error'
+import {Logger} from '@/utils/logger'
+import type {CreateBudgetRequest, UpdateBudgetRequest} from '@/types/api'
 
 export class BudgetService {
   static async getBudgets(userId: string): Promise<Budget[]> {
-    return sql<Budget[]>`
+    return sql`
       SELECT * FROM budgets 
       WHERE user_id = ${userId} 
       ORDER BY created_at DESC
-    `;
+    ` as unknown as Budget[]
   }
 
   static async getBudgetById(userId: string, budgetId: string): Promise<Budget> {
-    const result = await db
-      .select()
-      .from(budgets)
-      .where(and(eq(budgets.id, budgetId), eq(budgets.userId, userId)))
-      .limit(1);
+    const result = await sql`
+      SELECT * FROM budgets 
+      WHERE id = ${budgetId} AND user_id = ${userId}
+      LIMIT 1
+    ` as unknown as Budget[]
 
     if (!result.length) {
-      throw new AppError('Budget not found', 404);
+      throw new AppError('Budget not found', 404)
     }
 
-    return result[0];
+    return result[0]
   }
 
-  static async createBudget(
-    userId: string,
-    data: CreateBudgetRequest
-  ): Promise<Budget> {
-    const { category, maximum, theme } = data;
+  static async createBudget(userId: string, data: CreateBudgetRequest): Promise<Budget> {
+    const {category, maximum, theme} = data
 
     // Check if budget already exists for this category
-    const existing = await db
-      .select()
-      .from(budgets)
-      .where(and(eq(budgets.userId, userId), eq(budgets.category, category)))
-      .limit(1);
+    const existing = await sql`
+      SELECT * FROM budgets 
+      WHERE user_id = ${userId} AND category = ${category}
+      LIMIT 1
+    ` as unknown as Budget[]
 
     if (existing.length > 0) {
-      throw new AppError('Budget already exists for this category', 409);
+      throw new AppError('Budget already exists for this category', 409)
     }
 
-    const newBudget: NewBudget = {
-      userId,
-      category,
-      maximum: maximum.toString(),
-      theme,
-    };
+    const [result] = await sql`
+      INSERT INTO budgets (user_id, category, maximum, theme)
+      VALUES (${userId}, ${category}, ${maximum.toString()}, ${theme})
+      RETURNING *
+    ` as unknown as Budget[]
 
-    const result = await db.insert(budgets).values(newBudget).returning();
+    Logger.info('Budget created', {userId, budgetId: result.id, category})
 
-    Logger.info('Budget created', { userId, budgetId: result[0].id, category });
-
-    return result[0];
+    return result
   }
 
   static async updateBudget(
     userId: string,
     budgetId: string,
-    data: UpdateBudgetRequest
+    data: UpdateBudgetRequest,
   ): Promise<Budget> {
-    await this.getBudgetById(userId, budgetId);
+    await this.getBudgetById(userId, budgetId)
 
-    const updateData: Partial<NewBudget> = {};
+    const updates: string[] = []
+    const values: any[] = []
+    let paramIndex = 1
 
     if (data.category !== undefined) {
-      updateData.category = data.category;
+      updates.push(`category = $${paramIndex++}`)
+      values.push(data.category)
     }
 
     if (data.maximum !== undefined) {
-      updateData.maximum = data.maximum.toString();
+      updates.push(`maximum = $${paramIndex++}`)
+      values.push(data.maximum.toString())
     }
 
     if (data.theme !== undefined) {
-      updateData.theme = data.theme;
+      updates.push(`theme = $${paramIndex++}`)
+      values.push(data.theme)
     }
 
-    const result = await db
-      .update(budgets)
-      .set(updateData)
-      .where(eq(budgets.id, budgetId))
-      .returning();
+    if (updates.length === 0) {
+      return await this.getBudgetById(userId, budgetId)
+    }
 
-    Logger.info('Budget updated', { userId, budgetId });
+    updates.push(`updated_at = NOW()`)
+    values.push(budgetId)
 
-    return result[0];
+    const [result] = await sql`
+      UPDATE budgets 
+      SET ${sql.unsafe(updates.join(', '))}
+      WHERE id = ${budgetId}
+      RETURNING *
+    ` as unknown as Budget[]
+
+    Logger.info('Budget updated', {userId, budgetId})
+
+    return result
   }
 
   static async deleteBudget(userId: string, budgetId: string): Promise<void> {
-    await this.getBudgetById(userId, budgetId);
+    await this.getBudgetById(userId, budgetId)
 
-    await db.delete(budgets).where(eq(budgets.id, budgetId));
+    await sql`
+      DELETE FROM budgets 
+      WHERE id = ${budgetId}
+    `
 
-    Logger.info('Budget deleted', { userId, budgetId });
+    Logger.info('Budget deleted', {userId, budgetId})
   }
 
-  static async getBudgetWithSpending(userId: string, budgetId: string): Promise<{
-    budget: Budget;
-    spent: number;
-    remaining: number;
-    percentage: number;
-    latestTransactions: any[];
+  static async getBudgetWithSpending(
+    userId: string,
+    budgetId: string,
+  ): Promise<{
+    budget: Budget
+    spent: number
+    remaining: number
+    percentage: number
+    latestTransactions: any[]
   }> {
-    const budget = await this.getBudgetById(userId, budgetId);
+    const budget = await this.getBudgetById(userId, budgetId)
 
     // Get spending for current month
-    const currentMonth = new Date();
-    const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
-    const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+    const currentMonth = new Date()
+    const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
+    const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
 
-    const spentResult = await db
-      .select({
-        total: sql<number>`COALESCE(SUM(amount::numeric), 0)`,
-      })
-      .from(transactions)
-      .where(
-        and(
-          eq(transactions.userId, userId),
-          eq(transactions.category, budget.category),
-          eq(transactions.transactionType, 'expense'),
-          sql`transaction_date >= ${startOfMonth}`,
-          sql`transaction_date <= ${endOfMonth}`
-        )
-      );
+    const spentResult = await sql`
+      SELECT COALESCE(SUM(amount::numeric), 0) as total
+      FROM transactions
+      WHERE user_id = ${userId}
+        AND category = ${budget.category}
+        AND transaction_type = 'expense'
+        AND transaction_date >= ${startOfMonth}
+        AND transaction_date <= ${endOfMonth}
+    ` as unknown as [{total: string}]
 
-    const spent = Number(spentResult[0].total || 0);
-    const maximum = Number(budget.maximum);
-    const remaining = maximum - spent;
-    const percentage = maximum > 0 ? (spent / maximum) * 100 : 0;
+    const spent = Number(spentResult[0].total || 0)
+    const maximum = Number(budget.maximum)
+    const remaining = maximum - spent
+    const percentage = maximum > 0 ? (spent / maximum) * 100 : 0
 
     // Get latest 3 transactions for this category
-    const latestTransactions = await db
-      .select()
-      .from(transactions)
-      .where(
-        and(
-          eq(transactions.userId, userId),
-          eq(transactions.category, budget.category)
-        )
-      )
-      .orderBy(desc(transactions.transactionDate))
-      .limit(3);
+    const latestTransactions = await sql`
+      SELECT * 
+      FROM transactions
+      WHERE user_id = ${userId} AND category = ${budget.category}
+      ORDER BY transaction_date DESC
+      LIMIT 3
+    ` as unknown as any[]
 
     return {
       budget,
@@ -150,6 +155,6 @@ export class BudgetService {
       remaining,
       percentage,
       latestTransactions,
-    };
+    }
   }
 }

@@ -1,27 +1,34 @@
-import { env } from './env';
+import pino from 'pino'
+import {env} from './env'
+
+const loggerConfig = {
+  level: env.NODE_ENV === 'development' ? 'debug' : 'info',
+  ...(env.NODE_ENV === 'development' && {
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+      },
+    },
+  }),
+}
+
+const logger = pino(loggerConfig)
 
 export class Logger {
-  private static formatMessage(level: string, message: string, meta?: any): string {
-    const timestamp = new Date().toISOString();
-    const metaStr = meta ? ` | ${JSON.stringify(meta)}` : '';
-    return `[${timestamp}] [${level.toUpperCase()}] ${message}${metaStr}`;
-  }
-
   static info(message: string, meta?: any): void {
-    console.log(this.formatMessage('info', message, meta));
+    logger.info(meta, message)
   }
 
   static error(message: string, meta?: any): void {
-    console.error(this.formatMessage('error', message, meta));
+    logger.error(meta, message)
   }
 
   static warn(message: string, meta?: any): void {
-    console.warn(this.formatMessage('warn', message, meta));
+    logger.warn(meta, message)
   }
 
   static debug(message: string, meta?: any): void {
-    if (env.NODE_ENV === 'development') {
-      console.debug(this.formatMessage('debug', message, meta));
-    }
+    logger.debug(meta, message)
   }
 }

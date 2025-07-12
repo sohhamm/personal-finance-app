@@ -1,8 +1,8 @@
-import postgres from 'postgres';
+// Use Bun's native SQL API
+import { SQL } from 'bun';
 
-// Use postgres library that works well with Bun
-export const sql = postgres(process.env.DATABASE_URL!, {
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+export const sql = new SQL({
+  url: process.env.DATABASE_URL!,
 });
 
 // Type definitions for our database tables

@@ -1,68 +1,69 @@
-import { Request, Response, NextFunction } from 'express';
-import { sql, User } from '@/db';
-import { JwtUtils } from '@/utils/jwt';
-import { ResponseUtils } from '@/utils/response';
-import { Logger } from '@/utils/logger';
-import { AuthenticatedRequest } from '@/types/api';
+import type {Response, NextFunction} from 'express'
+import {sql} from '@/db'
+import type {User} from '@/db'
+import {JwtUtils} from '@/utils/jwt'
+import {ResponseUtils} from '@/utils/response'
+import {Logger} from '@/utils/logger'
+import type {AuthenticatedRequest} from '@/types/api'
 
 export const authenticate = async (
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
-    const token = JwtUtils.getTokenFromHeader(req.headers.authorization);
+    const token = JwtUtils.getTokenFromHeader(req.headers.authorization)
 
     if (!token) {
-      ResponseUtils.unauthorized(res, 'No token provided');
-      return;
+      ResponseUtils.unauthorized(res, 'No token provided')
+      return
     }
 
-    const payload = JwtUtils.verifyToken(token);
-    const user = await sql<User[]>`
+    const payload = JwtUtils.verifyToken(token)
+    const user = await sql`
       SELECT * FROM users WHERE id = ${payload.userId} LIMIT 1
-    `;
+    ` as User[]
 
     if (!user.length) {
-      ResponseUtils.unauthorized(res, 'User not found');
-      return;
+      ResponseUtils.unauthorized(res, 'User not found')
+      return
     }
 
-    req.user = user[0];
-    next();
+    req.user = user[0]
+    next()
   } catch (error) {
-    Logger.error('Authentication error', { error: error.message });
-    ResponseUtils.unauthorized(res, 'Invalid or expired token');
+    const err = error as any
+    Logger.error('Authentication error', {error: err.message})
+    ResponseUtils.unauthorized(res, 'Invalid or expired token')
   }
-};
+}
 
 export const optionalAuth = async (
   req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
+  _res: Response,
+  next: NextFunction,
 ): Promise<void> => {
   try {
-    const token = JwtUtils.getTokenFromHeader(req.headers.authorization);
+    const token = JwtUtils.getTokenFromHeader(req.headers.authorization)
 
     if (!token) {
-      next();
-      return;
+      next()
+      return
     }
 
-    const payload = JwtUtils.verifyToken(token);
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, payload.userId))
-      .limit(1);
+    const payload = JwtUtils.verifyToken(token)
+    const user = await sql`
+      SELECT * FROM users WHERE id = ${payload.userId} LIMIT 1
+    ` as User[]
 
     if (user.length) {
-      req.user = user[0];
+      req.user = user[0]
     }
 
-    next();
+    next()
   } catch (error) {
-    Logger.warn('Optional authentication failed', { error: error.message });
-    next();
+    const err = error as any
+    Logger.warn('Optional authentication failed', {error: err.message})
+    next()
   }
-};
+}
