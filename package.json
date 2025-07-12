@@ -1,0 +1,32 @@
+{
+  "name": "personal-finance-app",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Personal Finance App Monorepo",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"bun run dev:server\" \"bun run dev:web\"",
+    "dev:server": "cd apps/server && bun run dev",
+    "dev:web": "cd apps/web && bun run dev",
+    "build": "bun run build:types && bun run build:server && bun run build:web",
+    "build:types": "cd packages/shared-types && bun run build",
+    "build:server": "cd apps/server && bun run build",
+    "build:web": "cd apps/web && bun run build",
+    "lint": "bun run lint:server && bun run lint:web",
+    "lint:server": "cd apps/server && bun run lint",
+    "lint:web": "cd apps/web && bun run lint",
+    "format": "bun run format:server && bun run format:web",
+    "format:server": "cd apps/server && bun run format",
+    "format:web": "cd apps/web && bun run format"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "turbo": "^2.2.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

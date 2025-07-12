@@ -1,0 +1,29 @@
+{
+  "name": "@personal-finance-app/shared-types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types for Personal Finance App",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "bunx biome lint src/",
+    "format": "bunx biome format --write src/"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.1",
+    "typescript": "^5.8.3"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

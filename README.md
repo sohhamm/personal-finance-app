@@ -1,135 +1,249 @@
-# Frontend Mentor - Personal finance app
+# Personal Finance App Monorepo
 
-![Design preview for the Personal finance app coding challenge](./preview.jpg)
+A full-stack personal finance application built with modern web technologies and a monorepo structure for efficient development and type sharing.
 
-## Welcome! 👋
+## 🏗️ Architecture
 
-Thanks for purchasing this premium Frontend Mentor coding challenge.
+```
+personal-finance-app/
+├── packages/
+│   └── shared-types/          # Shared TypeScript types
+├── server/                    # Backend API (Bun + Express)
+├── web/                       # Frontend app (React + Vite)
+├── package.json              # Root workspace configuration
+└── turbo.json               # Turborepo configuration
+```
 
-[Frontend Mentor](https://www.frontendmentor.io) challenges help you improve your coding skills by building realistic projects. These premium challenges are perfect portfolio pieces, so please feel free to use what you create in your portfolio to show others.
+## 🛠️ Tech Stack
 
-**To do this challenge, you need a very strong understanding of HTML, CSS, and JavaScript.**
+### Backend (`/server`)
+- **Runtime**: Bun
+- **Framework**: Express.js
+- **Database**: PostgreSQL with Bun's native SQL
+- **Authentication**: JWT
+- **Validation**: Express Validator + Zod
+- **Code Quality**: Biome (linting + formatting)
 
-## The challenge
+### Frontend (`/web`)
+- **Framework**: React 19
+- **Build Tool**: Vite
+- **Routing**: TanStack Router
+- **State Management**: Zustand
+- **Data Fetching**: TanStack Query + Axios
+- **Forms**: TanStack Form + Zod
+- **Styling**: CSS Modules
+- **Code Quality**: Biome (linting + formatting)
 
-Your challenge is to build out this personal finance app and get it looking as close to the design as possible.
+### Shared (`/packages/shared-types`)
+- **Language**: TypeScript
+- **Purpose**: Shared type definitions between frontend and backend
+- **Build**: TypeScript compiler
 
-You can use any tools you like to help you complete the challenge. So if you've got something you'd like to practice, feel free to give it a go.
+## 🚀 Getting Started
 
-We provide the data in a local `data.json` file, so use that to populate the content on first load. If you want to take it up a notch, feel free to build this as a full-stack application!
+### Prerequisites
+- [Bun](https://bun.sh/) (latest version)
+- PostgreSQL database
+- Node.js 18+ (for compatibility)
 
-Your users should be able to:
+### Installation
 
-- See all of the personal finance app data at-a-glance on the overview page
-- View all transactions on the transactions page with pagination for every ten transactions
-- Search, sort, and filter transactions
-- Create, read, update, delete (CRUD) budgets and saving pots
-- View the latest three transactions for each budget category created
-- View progress towards each pot
-- Add money to and withdraw money from pots
-- View recurring bills and the status of each for the current month
-- Search and sort recurring bills
-- Receive validation messages if required form fields aren't completed
-- Navigate the whole app and perform all actions using only their keyboard
-- View the optimal layout for the interface depending on their device's screen size
-- See hover and focus states for all interactive elements on the page
-- **Bonus**: Save details to a database (build the project as a full-stack app)
-- **Bonus**: Create an account and log in (add user authentication to the full-stack app)
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd personal-finance-app
+   ```
 
-Want some support on the challenge? [Join our community](https://www.frontendmentor.io/community) and ask questions in the **#help** channel.
+2. **Install dependencies**
+   ```bash
+   bun install
+   ```
 
-### Expected behaviour
+3. **Set up environment variables**
+   
+   Create `.env` files in the server directory:
+   ```bash
+   # server/.env
+   DATABASE_URL=postgresql://username:password@localhost:5432/personal_finance
+   JWT_SECRET=your-super-secret-jwt-key
+   JWT_EXPIRES_IN=7d
+   NODE_ENV=development
+   PORT=3000
+   ```
 
-**⚠️ IMPORTANT ⚠️: The data in some designs will differ from what's in the `data.json` file. We recommend using the desktop designs to reference how the data should look, as these all include the correct data and copy. The tablet and mobile layouts are there for layout reference.**
+4. **Set up the database**
+   ```bash
+   # Run database migrations
+   cd server
+   bun run db:migrate
+   ```
 
-- Overview
-  - This page should display all the information at-a-glance and allow for easy navigation.
-  - We recommend building this page last, as it will require logic from the other pages (e.g., recurring bills) in order to display the data correctly.
-- Transactions
-  - Output the transactions from the `data.json` file, paginating results for every ten transactions.
-  - The search should allow for name search, but feel free to add other functionality like searching for transaction amounts if you want to test yourself.
-  - The sorting options include: Latest (most recent), Oldest, A to Z, Z to A, Highest (transaction amount), Lowest.
-  - The filter is by transaction category, which are: Entertainment, Bills, Groceries, Dining Out, Transportation, Personal Care, Education, Lifestyle, Shopping, General. Filtering by category should only show transactions from the selected category.
-- Budgets
-  - Don't worry if you can't create a donut pie chart exactly like in the design. Do your best to get close, but feel free to go in your own direction.
-  - The "Spent" amount should calculate the money spent within the category for the current month (August 2024 in the app).
-  - The "Latest Spending" component should display the three last transactions for that category regardless of the month.
-  - Clicking "See All" on a budget should navigate to the Transactions page with the filter set to the relevant category. For example, clicking "See All" on Entertainment should only show transactions with the Entertainment category.
-  - Adding a new budget should automatically pull in the three latest transactions from the created budget category and calculate the amount spent so far for August 2024.
-  - Deleting a budget should remove it from the Budgets page and the Overview.
-- Pots
-  - Adding money to a pot should deduct the given amount from the current balance (seen on the Overview page).
-  - Withdrawing money from a pot should add that amount to the current balance.
-  - Deleting a pot should return all the money from the pot to the current balance.
-- Recurring Bills
-  - List out all the recurring transactions and ensure only one item is shown per vendor.
-  - Show the recurring transactions that have already been paid for August 2024.
-  - Show the payments due to be paid soon based on their monthly payment date. Calculate this from recurring transactions yet to be paid for August 2024, but due within five days of the latest overall transaction in the app (Emma Richardson - 19 August 2024).
-  - The search should search based on name.
-  - The sorting options include: Latest (earliest in the month), Oldest, A to Z, Z to A, Highest (transaction amount), Lowest.
+5. **Build shared types**
+   ```bash
+   bun run build:types
+   ```
 
-## Where to find everything
+## 🏃 Development
 
-Your task is to build out the project to the design file provided. We provide both Sketch and Figma versions of the design, so you can choose which tool you prefer to use. You can download the design file on the platform. **Please be sure not to share them with anyone else.** The design download comes with a `README.md` file as well to help you get set up.
+### Start all services
+```bash
+bun run dev
+```
+This will start both the backend server and frontend development server concurrently.
 
-All the required assets for this project are in the `/assets` folder. The images are already exported for the correct screen size and optimized. Some are reusable at multiple screen sizes. So if you don't see an image in a specific folder, it will typically be in another folder for that page.
+### Start services individually
+```bash
+# Start backend only
+bun run dev:server
 
-We also include variable and static font files for the required fonts for this project. You can choose to either link to Google Fonts or use the local font files to host the fonts yourself. Note that we've removed the static font files for the font weights that aren't needed for this project.
+# Start frontend only  
+bun run dev:web
 
-The design system in the design file will give you more information about the various colors, fonts, and styles used in this project. Our fonts always come from [Google Fonts](https://fonts.google.com/).
+# Build and watch shared types
+cd packages/shared-types
+bun run dev
+```
 
-## Building your project
+## 📦 Available Scripts
 
-Feel free to use any workflow that you feel comfortable with. Below is a suggested process, but do not feel like you need to follow these steps:
+### Root Level
+- `bun run dev` - Start all services in development mode
+- `bun run build` - Build all packages and applications
+- `bun run lint` - Lint all packages
+- `bun run format` - Format all packages
 
-1. Separate the `starter-code` from the rest of this project and rename it to something meaningful for you. Initialize the codebase as a public repository on [GitHub](https://github.com/). Creating a repo will make it easier to share your code with the community if you need help. If you're not sure how to do this, [have a read-through of this Try Git resource](https://try.github.io/). **⚠️ IMPORTANT ⚠️: There are already a couple of `.gitignore` files in this project. Please do not remove them or change the content of the files. If you create a brand new project, please use the `.gitignore` files provided in your new codebase. This is to avoid the accidental upload of the design files to GitHub. With these premium challenges, please be sure not to share the design files in your GitHub repo. Thanks!**
-2. Configure your repository to publish your code to a web address. This will also be useful if you need some help during a challenge as you can share the URL for your project with your repo URL. There are a number of ways to do this, and we provide some recommendations below.
-3. Look through the designs to start planning out how you'll tackle the project. This step is crucial to help you think ahead for CSS classes to create reusable styles.
-4. Before adding any styles, structure your content with HTML. Writing your HTML first can help focus your attention on creating well-structured content.
-5. Write out the base styles for your project, including general content styles, such as `font-family` and `font-size`.
-6. Start adding styles to the top of the page and work down. Only move on to the next section once you're happy you've completed the area you're working on.
+### Backend (`/server`)
+- `bun run dev` - Start development server with hot reload
+- `bun run build` - Build for production
+- `bun run start` - Start production server
+- `bun run lint` - Lint TypeScript files
+- `bun run format` - Format TypeScript files
+- `bun run db:migrate` - Run database migrations
 
-## Deploying your project
+### Frontend (`/web`)
+- `bun run dev` - Start Vite development server
+- `bun run build` - Build for production
+- `bun run preview` - Preview production build
+- `bun run lint` - Lint TypeScript/React files
+- `bun run format` - Format TypeScript/React files
 
-As mentioned above, there are many ways to host your project for free. Our recommend hosts are:
+### Shared Types (`/packages/shared-types`)
+- `bun run build` - Compile TypeScript to JavaScript
+- `bun run dev` - Watch and compile on changes
+- `bun run lint` - Lint TypeScript files
+- `bun run format` - Format TypeScript files
 
-- [GitHub Pages](https://pages.github.com/)
-- [Vercel](https://vercel.com/)
-- [Netlify](https://www.netlify.com/)
+## 🗂️ Shared Types Structure
 
-You can host your site using one of these solutions or any of our other trusted providers. [Read more about our recommended and trusted hosts](https://medium.com/frontend-mentor/frontend-mentor-trusted-hosting-providers-bf000dfebe).
+The shared types package includes:
 
-## Create a custom `README.md`
+### API Types
+- `ApiResponse<T>` - Standard API response wrapper
+- `PaginatedResponse<T>` - Paginated data response
+- `PaginationMetadata` - Pagination info
+- `BaseTableQuery` - Common query parameters
 
-We strongly recommend overwriting this `README.md` with a custom one. We've provided a template inside the [`README-template.md`](./README-template.md) file in this starter code.
+### Domain Types
+- **Auth**: `LoginRequest`, `SignupRequest`, `AuthResponse`, `JwtPayload`
+- **User**: `User`, `UserProfile`
+- **Transaction**: `Transaction`, `CreateTransactionRequest`, `TransactionQuery`, etc.
+- **Budget**: `Budget`, `CreateBudgetRequest`, `BudgetWithSpending`
+- **Pot**: `Pot`, `CreatePotRequest`, `PotProgress`
+- **Recurring Bills**: `RecurringBill`, `RecurringBillPayment`, etc.
+- **Overview**: `OverviewData`, `MonthlyTrend`
 
-The template provides a guide for what to add. A custom `README` will help you explain your project and reflect on your learnings. Please feel free to edit our template as much as you like.
+## 🔧 Configuration
 
-Once you've added your information to the template, delete this file and rename the `README-template.md` file to `README.md`. That will make it show up as your repository's README file.
+### TypeScript Configuration
+Each package has its own `tsconfig.json` with appropriate settings:
+- **Server**: Configured for Node.js with Bun
+- **Web**: Configured for React with Vite
+- **Shared Types**: Configured for library compilation
 
-## Submitting your solution
+### Code Quality
+All packages use Biome for consistent linting and formatting:
+- Shared configuration in `biome.json`
+- Consistent code style across frontend and backend
+- Pre-configured rules for TypeScript and React
 
-Submit your solution on the platform for the rest of the community to see. Follow our ["Complete guide to submitting solutions"](https://medium.com/frontend-mentor/a-complete-guide-to-submitting-solutions-on-frontend-mentor-ac6384162248) for tips on how to do this.
+### Monorepo Management
+- **Workspace**: Bun workspaces for dependency management
+- **Turborepo**: Pipeline configuration for builds and tasks
+- **Shared Dependencies**: Types package linked via workspace protocol
 
-Remember, if you're looking for feedback on your solution, be sure to ask questions when submitting it. The more specific and detailed you are with your questions, the higher the chance you'll get valuable feedback from the community.
+## 📚 API Endpoints
 
-**⚠️ IMPORTANT ⚠️: With these premium challenges, please be sure not to upload the design files to GitHub when you're submitting to the platform and sharing it around. If you've created a brand new project, the easiest way to do that is to copy across the `.gitignore` provided in this starter project.**
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/signup` - User registration  
+- `GET /api/auth/profile` - Get user profile
 
-## Sharing your solution
+### Transactions
+- `GET /api/transactions` - List transactions (paginated)
+- `POST /api/transactions` - Create transaction
+- `GET /api/transactions/:id` - Get specific transaction
+- `PUT /api/transactions/:id` - Update transaction
+- `DELETE /api/transactions/:id` - Delete transaction
+- `GET /api/transactions/categories` - Get transaction categories
+- `GET /api/transactions/stats` - Get transaction statistics
 
-There are multiple places you can share your solution:
+### Budgets
+- `GET /api/budgets` - List budgets
+- `POST /api/budgets` - Create budget
+- `GET /api/budgets/:id` - Get specific budget
+- `PUT /api/budgets/:id` - Update budget
+- `DELETE /api/budgets/:id` - Delete budget
+- `GET /api/budgets/:id/spending` - Get budget with spending info
 
-1. Share your solution page in the **#finished-projects** channel of our [community](https://www.frontendmentor.io/community). 
-2. Tweet [@frontendmentor](https://twitter.com/frontendmentor) and mention **@frontendmentor**, including the repo and live URLs in the tweet. We'd love to take a look at what you've built and help share it around.
-3. Share your solution on other social channels like LinkedIn.
-4. Blog about your experience building your project. Writing about your workflow, technical choices, and talking through your code is a brilliant way to reinforce what you've learned. Great platforms to write on are [dev.to](https://dev.to/), [Hashnode](https://hashnode.com/), and [CodeNewbie](https://community.codenewbie.org/).
+### Pots
+- `GET /api/pots` - List pots
+- `POST /api/pots` - Create pot
+- `GET /api/pots/:id` - Get specific pot
+- `PUT /api/pots/:id` - Update pot
+- `DELETE /api/pots/:id` - Delete pot (returns money)
+- `POST /api/pots/:id/add` - Add money to pot
+- `POST /api/pots/:id/withdraw` - Withdraw money from pot
+- `GET /api/pots/:id/progress` - Get pot progress
 
-We provide templates to help you share your solution once you've submitted it on the platform. Please do edit them and include specific questions when you're looking for feedback. 
+### Recurring Bills
+- `GET /api/recurring-bills` - List recurring bills (paginated)
+- `POST /api/recurring-bills` - Create recurring bill
+- `GET /api/recurring-bills/:id` - Get specific recurring bill
+- `PUT /api/recurring-bills/:id` - Update recurring bill
+- `DELETE /api/recurring-bills/:id` - Delete recurring bill
+- `PATCH /api/recurring-bills/payments/:paymentId/paid` - Mark bill as paid
+- `GET /api/recurring-bills/due-soon` - Get bills due soon
 
-The more specific you are with your questions the more likely it is that another member of the community will give you feedback.
+### Overview
+- `GET /api/overview` - Get dashboard overview data
+- `GET /api/overview/monthly-trends` - Get monthly income/expense trends
 
-## Got feedback for us?
+## 🚢 Deployment
 
-We love receiving feedback! We're always looking to improve our challenges and our platform. So if you have anything you'd like to mention, please email hi[at]frontendmentor[dot]io.
+### Backend Deployment
+```bash
+cd server
+bun run build
+bun run start
+```
 
-**Have fun building!** 🚀
+### Frontend Deployment
+```bash
+cd web
+bun run build
+# Deploy the 'dist' folder to your hosting provider
+```
+
+### Docker (Optional)
+Create Docker configurations for each service as needed.
+
+## 🤝 Contributing
+
+1. Follow the established code style (enforced by Biome)
+2. Add types to the shared package when creating new APIs
+3. Test both frontend and backend when making changes
+4. Update this README when adding new features
+
+## 📄 License
+
+[Your License Here]
