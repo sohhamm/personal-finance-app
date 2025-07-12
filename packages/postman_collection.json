@@ -22,12 +22,32 @@
       "type": "string"
     },
     {
+      "key": "transactionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "budgetId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "potId",
+      "value": "",
+      "type": "string"
+    },
+    {
       "key": "recurringBillId",
       "value": "",
       "type": "string"
     },
     {
       "key": "paymentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
       "value": "",
       "type": "string"
     }
@@ -1199,6 +1219,331 @@
         }
       ],
       "description": "Test scenarios for edge cases and error handling"
+    },
+    {
+      "name": "❌ Error Testing",
+      "item": [
+        {
+          "name": "Invalid Email Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"invalid-email-format\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "signup"]
+            },
+            "description": "Test signup with invalid email format - should return 400"
+          },
+          "response": []
+        },
+        {
+          "name": "Weak Password Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"weak\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "signup"]
+            },
+            "description": "Test signup with weak password - should return 400"
+          },
+          "response": []
+        },
+        {
+          "name": "Duplicate Email Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Another User\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "signup"]
+            },
+            "description": "Test signup with existing email - should return 400"
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Login Credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"WrongPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Test login with wrong password - should return 401"
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Token Access",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid_token_here"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "profile"]
+            },
+            "description": "Test access with invalid token - should return 401"
+          },
+          "response": []
+        },
+        {
+          "name": "Transaction Not Found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "00000000-0000-0000-0000-000000000000"]
+            },
+            "description": "Test getting non-existent transaction - should return 404"
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Transaction Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientSender\": \"\",\n  \"category\": \"InvalidCategory\",\n  \"transactionDate\": \"invalid-date\",\n  \"amount\": -100,\n  \"transactionType\": \"invalid_type\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"]
+            },
+            "description": "Test creating transaction with invalid data - should return 400"
+          },
+          "response": []
+        },
+        {
+          "name": "Insufficient Funds Withdrawal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 99999.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pots/{{potId}}/withdraw",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pots", "{{potId}}", "withdraw"]
+            },
+            "description": "Test withdrawing more than available - should return 400"
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Budget Theme",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"Groceries\",\n  \"maximum\": 500.00,\n  \"theme\": \"invalid-color\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/budgets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budgets"]
+            },
+            "description": "Test creating budget with invalid theme color - should return 400"
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Due Day for Bill",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Bill\",\n  \"amount\": 50.00,\n  \"dueDay\": 35,\n  \"category\": \"Bills\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills"]
+            },
+            "description": "Test creating bill with invalid due day (>31) - should return 400"
+          },
+          "response": []
+        }
+      ],
+      "description": "Error testing scenarios for validation and edge cases"
+    },
+    {
+      "name": "🚀 Performance Testing",
+      "item": [
+        {
+          "name": "Bulk Transaction Creation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientSender\": \"Performance Test Transaction\",\n  \"category\": \"General\",\n  \"transactionDate\": \"2024-01-01T00:00:00.000Z\",\n  \"amount\": 100.00,\n  \"transactionType\": \"expense\",\n  \"recurring\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"]
+            },
+            "description": "Create multiple transactions to test performance with larger datasets"
+          },
+          "response": []
+        },
+        {
+          "name": "Large Page Size Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions?page=1&limit=100",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "100",
+                  "description": "Maximum allowed limit"
+                }
+              ]
+            },
+            "description": "Test maximum page size limit"
+          },
+          "response": []
+        },
+        {
+          "name": "Complex Query Performance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions?search=test&category=General&sortBy=amount&sortOrder=desc&startDate=2023-01-01&endDate=2024-12-31&page=1&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "test"
+                },
+                {
+                  "key": "category",
+                  "value": "General"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "amount"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2023-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-12-31"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "Test complex query with all filters applied"
+          },
+          "response": []
+        }
+      ],
+      "description": "Performance testing scenarios for load and stress testing"
     }
   ],
   "event": [

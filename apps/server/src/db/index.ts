@@ -1,9 +1,45 @@
-// Use Bun's native SQL API
+// Use Bun's native SQL API with connection pooling
 import { SQL } from 'bun';
+import { Logger } from '@/utils/logger';
 
-export const sql = new SQL({
-  url: process.env.DATABASE_URL!,
-});
+const createConnection = () => {
+  try {
+    return new SQL({
+      url: process.env.DATABASE_URL!,
+      // Connection pool configuration
+      max: 20, // Maximum connections in pool
+      min: 2,  // Minimum connections in pool
+      idleTimeoutMillis: 30000, // Close idle connections after 30s
+      connectionTimeoutMillis: 2000, // 2s timeout for new connections
+    });
+  } catch (error) {
+    Logger.error('Failed to create database connection', { error });
+    throw error;
+  }
+};
+
+export const sql = createConnection();
+
+// Database health check
+export const checkDatabaseHealth = async (): Promise<boolean> => {
+  try {
+    await sql`SELECT 1`;
+    return true;
+  } catch (error) {
+    Logger.error('Database health check failed', { error });
+    return false;
+  }
+};
+
+// Graceful database shutdown
+export const closeDatabase = async (): Promise<void> => {
+  try {
+    await sql.end();
+    Logger.info('Database connections closed successfully');
+  } catch (error) {
+    Logger.error('Error closing database connections', { error });
+  }
+};
 
 // Type definitions for our database tables
 export interface User {

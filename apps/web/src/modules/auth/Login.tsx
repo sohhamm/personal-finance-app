@@ -3,9 +3,7 @@ import Button from '@/components/ui/button/Button'
 import classes from './auth.module.css'
 import {Link, useNavigate} from '@tanstack/react-router'
 import {useForm} from '@tanstack/react-form'
-import {zodValidator} from '@tanstack/zod-form-adapter'
 import {useMutation} from '@tanstack/react-query'
-import {z} from 'zod'
 import {InputField} from '@/components/ui/input-field/InputField'
 import {loginSchema} from './schema'
 import {login} from '@/services/auth.service'
@@ -33,7 +31,9 @@ export default function Login() {
     onSubmit: async ({value}) => {
       await loginMutation.mutateAsync(value)
     },
-    validatorAdapter: zodValidator(),
+    validators: {
+      onChange: loginSchema,
+    },
   })
 
   return (
@@ -51,22 +51,7 @@ export default function Login() {
         }}
       >
         <div className={classes.fields}>
-          <form.Field
-            name='email'
-            validators={{
-              onChange: loginSchema.shape.email,
-              onChangeAsyncDebounceMs: 500,
-              onChangeAsync: z.string().refine(
-                async value => {
-                  await new Promise(resolve => setTimeout(resolve, 500))
-                  return !value.includes('error')
-                },
-                {
-                  message: "Email cannot contain 'error'",
-                },
-              ),
-            }}
-          >
+          <form.Field name='email'>
             {field => (
               <InputField 
                 field={field} 
@@ -77,12 +62,7 @@ export default function Login() {
             )}
           </form.Field>
           
-          <form.Field
-            name='password'
-            validators={{
-              onChange: loginSchema.shape.password,
-            }}
-          >
+          <form.Field name='password'>
             {field => (
               <InputField
                 field={field}

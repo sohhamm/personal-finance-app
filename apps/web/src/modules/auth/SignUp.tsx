@@ -1,9 +1,7 @@
-import * as React from 'react'
 import Button from '@/components/ui/button/Button'
 import classes from './auth.module.css'
 import {Link, useNavigate} from '@tanstack/react-router'
 import {useForm} from '@tanstack/react-form'
-import {zodValidator} from '@tanstack/zod-form-adapter'
 import {useMutation} from '@tanstack/react-query'
 import {InputField} from '@/components/ui/input-field/InputField'
 import {signupSchema} from './schema'
@@ -33,15 +31,17 @@ export default function Signup() {
     onSubmit: async ({value}) => {
       await signupMutation.mutateAsync(value)
     },
-    validatorAdapter: zodValidator(),
+    validators: {
+      onChange: signupSchema,
+    },
   })
 
   return (
     <div className={classes.authForm}>
       <div className={classes.formHeader}>
-        <h1 className="fin-text-preset-1">Sign Up</h1>
+        <h1 className='fin-text-preset-1'>Sign Up</h1>
       </div>
-      
+
       <form
         className={classes.form}
         onSubmit={e => {
@@ -51,28 +51,15 @@ export default function Signup() {
         }}
       >
         <div className={classes.fields}>
-          <form.Field name='name' validators={{onChange: signupSchema.shape.name}}>
-            {field => (
-              <InputField 
-                field={field} 
-                label='Name' 
-                placeholder='' 
-              />
-            )}
+          <form.Field name='name'>
+            {field => <InputField field={field} label='Name' placeholder='' />}
           </form.Field>
-          
-          <form.Field name='email' validators={{onChange: signupSchema.shape.email}}>
-            {field => (
-              <InputField 
-                field={field} 
-                label='Email' 
-                placeholder='' 
-                type='email' 
-              />
-            )}
+
+          <form.Field name='email'>
+            {field => <InputField field={field} label='Email' placeholder='' type='email' />}
           </form.Field>
-          
-          <form.Field name='password' validators={{onChange: signupSchema.shape.password}}>
+
+          <form.Field name='password'>
             {field => (
               <InputField
                 field={field}
@@ -86,8 +73,8 @@ export default function Signup() {
           </form.Field>
         </div>
 
-        <Button 
-          type='submit' 
+        <Button
+          type='submit'
           disabled={signupMutation.isPending}
           loading={signupMutation.isPending}
           fullWidth
@@ -103,7 +90,7 @@ export default function Signup() {
           </p>
         )}
       </form>
-      
+
       <div className={classes.footer}>
         <p className={classes.footerText}>
           Already have an account?{' '}

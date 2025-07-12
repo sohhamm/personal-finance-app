@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { query } from 'express-validator';
 import { OverviewController } from '@/controllers/overview.controller';
-import { handleValidationErrors } from '@/middleware/validation';
 import { authenticate } from '@/middleware/auth';
 import { apiRateLimit } from '@/middleware/rateLimit';
+import { handleValidationErrors } from '@/middleware/validation';
 
 const router = Router();
 
@@ -20,6 +20,11 @@ router.use(apiRateLimit);
 
 // Routes
 router.get('/', OverviewController.getOverviewData);
-router.get('/trends', trendsValidation, handleValidationErrors, OverviewController.getMonthlyTrends);
+router.get(
+  '/trends',
+  trendsValidation,
+  handleValidationErrors,
+  OverviewController.getMonthlyTrends
+);
 
 export default router;

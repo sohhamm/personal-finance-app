@@ -1,5 +1,5 @@
-import rateLimit from 'express-rate-limit'
-import {env} from '@/utils/env'
+import rateLimit from 'express-rate-limit';
+import { env } from '@/utils/env';
 
 export const globalRateLimit = rateLimit({
   windowMs: env.RATE_LIMIT_WINDOW_MS,
@@ -10,7 +10,7 @@ export const globalRateLimit = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-})
+});
 
 export const authRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -21,7 +21,7 @@ export const authRateLimit = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-})
+});
 
 export const apiRateLimit = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -32,4 +32,4 @@ export const apiRateLimit = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-})
+});

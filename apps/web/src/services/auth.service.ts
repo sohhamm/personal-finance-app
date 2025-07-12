@@ -1,5 +1,5 @@
 import { apiClient } from '@/configs/api';
-import { setAccessToken } from '@/stores/auth';
+import { setAuthData, logout as logoutStore } from '@/stores/auth';
 import type { 
   LoginRequest, 
   SignupRequest, 
@@ -22,8 +22,10 @@ const commonAuthHelper = async ({
   try {
     const response = await apiClient.post<ApiResponse<AuthResponse>>(endpoint, payload);
     const authData = response.data.data!;
-    const accessToken = authData.token;
-    setAccessToken(accessToken);
+    
+    // Store both token and user data
+    setAuthData(authData.token, authData.user);
+    
     return authData;
   } catch (err) {
     console.error(err);
@@ -55,7 +57,7 @@ export class AuthService {
 
   static async logout(): Promise<void> {
     // Clear local storage and state
-    setAccessToken(null);
+    logoutStore();
   }
 }
 

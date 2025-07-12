@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 import { PotController } from '@/controllers/pot.controller';
-import { handleValidationErrors } from '@/middleware/validation';
 import { authenticate } from '@/middleware/auth';
 import { apiRateLimit } from '@/middleware/rateLimit';
+import { handleValidationErrors } from '@/middleware/validation';
 
 const router = Router();
 
@@ -14,9 +14,7 @@ const createPotValidation = [
     .trim()
     .isLength({ min: 1, max: 255 })
     .withMessage('Name is required and must be less than 255 characters'),
-  body('target')
-    .isFloat({ min: 0.01 })
-    .withMessage('Target amount must be greater than 0'),
+  body('target').isFloat({ min: 0.01 }).withMessage('Target amount must be greater than 0'),
   body('theme')
     .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
     .withMessage('Theme must be a valid hex color code'),
@@ -39,9 +37,7 @@ const updatePotValidation = [
 ];
 
 const moneyTransactionValidation = [
-  body('amount')
-    .isFloat({ min: 0.01 })
-    .withMessage('Amount must be greater than 0'),
+  body('amount').isFloat({ min: 0.01 }).withMessage('Amount must be greater than 0'),
 ];
 
 router.use(authenticate);
@@ -51,9 +47,27 @@ router.get('/', PotController.getPots);
 router.get('/:id', uuidValidation, handleValidationErrors, PotController.getPotById);
 router.get('/:id/progress', uuidValidation, handleValidationErrors, PotController.getPotProgress);
 router.post('/', createPotValidation, handleValidationErrors, PotController.createPot);
-router.put('/:id', uuidValidation, updatePotValidation, handleValidationErrors, PotController.updatePot);
+router.put(
+  '/:id',
+  uuidValidation,
+  updatePotValidation,
+  handleValidationErrors,
+  PotController.updatePot
+);
 router.delete('/:id', uuidValidation, handleValidationErrors, PotController.deletePot);
-router.post('/:id/add', uuidValidation, moneyTransactionValidation, handleValidationErrors, PotController.addMoney);
-router.post('/:id/withdraw', uuidValidation, moneyTransactionValidation, handleValidationErrors, PotController.withdrawMoney);
+router.post(
+  '/:id/add',
+  uuidValidation,
+  moneyTransactionValidation,
+  handleValidationErrors,
+  PotController.addMoney
+);
+router.post(
+  '/:id/withdraw',
+  uuidValidation,
+  moneyTransactionValidation,
+  handleValidationErrors,
+  PotController.withdrawMoney
+);
 
 export default router;

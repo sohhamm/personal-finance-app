@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 import { BudgetController } from '@/controllers/budget.controller';
-import { handleValidationErrors } from '@/middleware/validation';
 import { authenticate } from '@/middleware/auth';
 import { apiRateLimit } from '@/middleware/rateLimit';
+import { handleValidationErrors } from '@/middleware/validation';
 
 const router = Router();
 
@@ -24,9 +24,7 @@ const createBudgetValidation = [
       'General',
     ])
     .withMessage('Invalid category'),
-  body('maximum')
-    .isFloat({ min: 0.01 })
-    .withMessage('Maximum amount must be greater than 0'),
+  body('maximum').isFloat({ min: 0.01 }).withMessage('Maximum amount must be greater than 0'),
   body('theme')
     .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
     .withMessage('Theme must be a valid hex color code'),
@@ -63,9 +61,20 @@ router.use(apiRateLimit);
 
 router.get('/', BudgetController.getBudgets);
 router.get('/:id', uuidValidation, handleValidationErrors, BudgetController.getBudgetById);
-router.get('/:id/spending', uuidValidation, handleValidationErrors, BudgetController.getBudgetWithSpending);
+router.get(
+  '/:id/spending',
+  uuidValidation,
+  handleValidationErrors,
+  BudgetController.getBudgetWithSpending
+);
 router.post('/', createBudgetValidation, handleValidationErrors, BudgetController.createBudget);
-router.put('/:id', uuidValidation, updateBudgetValidation, handleValidationErrors, BudgetController.updateBudget);
+router.put(
+  '/:id',
+  uuidValidation,
+  updateBudgetValidation,
+  handleValidationErrors,
+  BudgetController.updateBudget
+);
 router.delete('/:id', uuidValidation, handleValidationErrors, BudgetController.deleteBudget);
 
 export default router;

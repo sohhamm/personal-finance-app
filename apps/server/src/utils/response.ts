@@ -1,5 +1,5 @@
-import type {Response} from 'express'
-import type {ApiResponse, PaginatedResponse} from '@/types/api'
+import type { Response } from 'express';
+import type { ApiResponse, PaginatedResponse } from '@/types/api';
 
 export class ResponseUtils {
   static success<T>(res: Response, data: T, message?: string, statusCode = 200): Response {
@@ -7,8 +7,8 @@ export class ResponseUtils {
       success: true,
       data,
       ...(message !== undefined && { message }),
-    }
-    return res.status(statusCode).json(response)
+    };
+    return res.status(statusCode).json(response);
   }
 
   static error(res: Response, message: string, statusCode = 400, errors?: string[]): Response {
@@ -16,8 +16,8 @@ export class ResponseUtils {
       success: false,
       message,
       ...(errors !== undefined && { errors }),
-    }
-    return res.status(statusCode).json(response)
+    };
+    return res.status(statusCode).json(response);
   }
 
   static paginated<T>(
@@ -25,7 +25,7 @@ export class ResponseUtils {
     data: T[],
     pagination: PaginatedResponse<T>['pagination'],
     message?: string,
-    statusCode = 200,
+    statusCode = 200
   ): Response {
     const response: ApiResponse<PaginatedResponse<T>> = {
       success: true,
@@ -34,35 +34,35 @@ export class ResponseUtils {
         pagination,
       },
       ...(message !== undefined && { message }),
-    }
-    return res.status(statusCode).json(response)
+    };
+    return res.status(statusCode).json(response);
   }
 
   static created<T>(res: Response, data: T, message?: string): Response {
-    return this.success(res, data, message, 201)
+    return ResponseUtils.success(res, data, message, 201);
   }
 
   static noContent(res: Response, message?: string): Response {
     const response: ApiResponse = {
       success: true,
       ...(message !== undefined && { message }),
-    }
-    return res.status(204).json(response)
+    };
+    return res.status(204).json(response);
   }
 
   static unauthorized(res: Response, message = 'Unauthorized'): Response {
-    return this.error(res, message, 401)
+    return ResponseUtils.error(res, message, 401);
   }
 
   static forbidden(res: Response, message = 'Forbidden'): Response {
-    return this.error(res, message, 403)
+    return ResponseUtils.error(res, message, 403);
   }
 
   static notFound(res: Response, message = 'Resource not found'): Response {
-    return this.error(res, message, 404)
+    return ResponseUtils.error(res, message, 404);
   }
 
   static serverError(res: Response, message = 'Internal server error'): Response {
-    return this.error(res, message, 500)
+    return ResponseUtils.error(res, message, 500);
   }
 }

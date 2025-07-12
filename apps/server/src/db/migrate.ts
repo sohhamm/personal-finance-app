@@ -1,5 +1,5 @@
-import { sql } from './index';
 import { Logger } from '../utils/logger';
+import { sql } from './index';
 
 const migrations = [
   {
@@ -166,24 +166,24 @@ async function runMigrations() {
     const executedMigrations = await sql`
       SELECT id FROM migrations;
     `;
-    
-    const executedIds = new Set(executedMigrations.map(m => m.id));
+
+    const executedIds = new Set(executedMigrations.map((m) => m.id));
 
     // Run pending migrations
     for (const migration of migrations) {
       if (!executedIds.has(migration.id)) {
         Logger.info(`Running migration: ${migration.id}`);
-        
+
         await sql.begin(async (sql) => {
           // Execute the migration SQL
           await sql.unsafe(migration.sql);
-          
+
           // Record the migration as executed
           await sql`
             INSERT INTO migrations (id) VALUES (${migration.id});
           `;
         });
-        
+
         Logger.info(`Completed migration: ${migration.id}`);
       } else {
         Logger.info(`Skipping already executed migration: ${migration.id}`);
