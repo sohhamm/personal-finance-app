@@ -30,7 +30,11 @@ export class RecurringBillController {
     } catch (error) {
       const err = error as any;
       Logger.error('Error getting recurring bills:', err);
-      return ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        return ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        return ResponseUtils.serverError(res);
+      }
     }
   }
 
@@ -47,11 +51,12 @@ export class RecurringBillController {
       return ResponseUtils.success(res, recurringBill, 'Recurring bill retrieved successfully');
     } catch (error) {
       const err = error as any;
-      if (err.message === 'Recurring bill not found') {
-        return ResponseUtils.notFound(res, 'Recurring bill not found');
-      }
       Logger.error('Error getting recurring bill by ID:', err);
-      return ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        return ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        return ResponseUtils.serverError(res);
+      }
     }
   }
 
@@ -75,7 +80,11 @@ export class RecurringBillController {
     } catch (error) {
       const err = error as any;
       Logger.error('Error creating recurring bill:', err);
-      return ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        return ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        return ResponseUtils.serverError(res);
+      }
     }
   }
 
@@ -101,11 +110,12 @@ export class RecurringBillController {
       return ResponseUtils.success(res, recurringBill, 'Recurring bill updated successfully');
     } catch (error) {
       const err = error as any;
-      if (err.message === 'Recurring bill not found') {
-        return ResponseUtils.notFound(res, 'Recurring bill not found');
-      }
       Logger.error('Error updating recurring bill:', err);
-      return ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        return ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        return ResponseUtils.serverError(res);
+      }
     }
   }
 
@@ -122,11 +132,12 @@ export class RecurringBillController {
       return ResponseUtils.success(res, null, 'Recurring bill deleted successfully');
     } catch (error) {
       const err = error as any;
-      if (err.message === 'Recurring bill not found') {
-        return ResponseUtils.notFound(res, 'Recurring bill not found');
-      }
       Logger.error('Error deleting recurring bill:', err);
-      return ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        return ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        return ResponseUtils.serverError(res);
+      }
     }
   }
 
@@ -149,11 +160,12 @@ export class RecurringBillController {
       return ResponseUtils.success(res, updatedPayment, 'Bill marked as paid successfully');
     } catch (error) {
       const err = error as any;
-      if (err.message === 'Payment record not found') {
-        return ResponseUtils.notFound(res, 'Payment record not found');
-      }
       Logger.error('Error marking bill as paid:', err);
-      return ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        return ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        return ResponseUtils.serverError(res);
+      }
     }
   }
 
@@ -169,7 +181,11 @@ export class RecurringBillController {
     } catch (error) {
       const err = error as any;
       Logger.error('Error getting bills due soon:', err);
-      return ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        return ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        return ResponseUtils.serverError(res);
+      }
     }
   }
 }

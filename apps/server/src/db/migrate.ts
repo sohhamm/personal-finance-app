@@ -148,6 +148,20 @@ const migrations = [
       CREATE UNIQUE INDEX IF NOT EXISTS unique_bill_due_date_idx ON recurring_bill_payments(recurring_bill_id, due_date);
     `,
   },
+  {
+    id: '007_add_performance_indexes',
+    sql: `
+      -- Additional performance indexes
+      CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);
+      CREATE INDEX IF NOT EXISTS idx_transactions_user_date ON transactions(user_id, transaction_date DESC);
+      CREATE INDEX IF NOT EXISTS idx_transactions_user_category ON transactions(user_id, category);
+      CREATE INDEX IF NOT EXISTS idx_transactions_recipient_sender ON transactions(recipient_sender);
+      CREATE INDEX IF NOT EXISTS idx_budgets_user_category ON budgets(user_id, category);
+      CREATE INDEX IF NOT EXISTS idx_recurring_bills_active ON recurring_bills(is_active);
+      CREATE INDEX IF NOT EXISTS idx_recurring_bills_user_active ON recurring_bills(user_id, is_active);
+      CREATE INDEX IF NOT EXISTS idx_recurring_bill_payments_transaction_id ON recurring_bill_payments(transaction_id);
+    `,
+  },
 ];
 
 async function runMigrations() {

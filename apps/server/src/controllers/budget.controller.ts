@@ -17,7 +17,11 @@ export class BudgetController {
     } catch (error) {
       const err = error as any;
       Logger.error('Get budgets error', { error: err.message });
-      ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        ResponseUtils.serverError(res);
+      }
     }
   }
 

@@ -126,7 +126,11 @@ export class TransactionController {
     } catch (error) {
       const err = error as any;
       Logger.error('Get categories error', { error: err.message });
-      ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        ResponseUtils.serverError(res);
+      }
     }
   }
 
@@ -142,7 +146,11 @@ export class TransactionController {
     } catch (error) {
       const err = error as any;
       Logger.error('Get transaction stats error', { error: err.message });
-      ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        ResponseUtils.serverError(res);
+      }
     }
   }
 }

@@ -17,7 +17,11 @@ export class OverviewController {
     } catch (error) {
       const err = error as any;
       Logger.error('Error getting overview data:', err);
-      return ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        return ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        return ResponseUtils.serverError(res);
+      }
     }
   }
 
@@ -35,7 +39,11 @@ export class OverviewController {
     } catch (error) {
       const err = error as any;
       Logger.error('Error getting monthly trends:', err);
-      return ResponseUtils.serverError(res);
+      if (err.statusCode) {
+        return ResponseUtils.error(res, err.message, err.statusCode);
+      } else {
+        return ResponseUtils.serverError(res);
+      }
     }
   }
 }
