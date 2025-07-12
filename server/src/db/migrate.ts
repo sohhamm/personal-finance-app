@@ -111,6 +111,43 @@ const migrations = [
       );
     `,
   },
+  {
+    id: '006_create_recurring_bills',
+    sql: `
+      CREATE TABLE IF NOT EXISTS recurring_bills (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        name VARCHAR(255) NOT NULL,
+        amount DECIMAL(10, 2) NOT NULL,
+        due_day INTEGER NOT NULL CHECK (due_day >= 1 AND due_day <= 31),
+        category category NOT NULL,
+        avatar VARCHAR(500),
+        is_active BOOLEAN DEFAULT true NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS recurring_bill_payments (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        recurring_bill_id UUID NOT NULL REFERENCES recurring_bills(id) ON DELETE CASCADE,
+        transaction_id UUID REFERENCES transactions(id) ON DELETE SET NULL,
+        due_date DATE NOT NULL,
+        paid_date TIMESTAMP,
+        amount DECIMAL(10, 2) NOT NULL,
+        status VARCHAR(20) DEFAULT 'pending' NOT NULL CHECK (status IN ('pending', 'paid', 'overdue')),
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS recurring_bills_user_id_idx ON recurring_bills(user_id);
+      CREATE INDEX IF NOT EXISTS recurring_bills_name_idx ON recurring_bills(name);
+      CREATE INDEX IF NOT EXISTS recurring_bills_due_day_idx ON recurring_bills(due_day);
+      CREATE INDEX IF NOT EXISTS recurring_bill_payments_bill_id_idx ON recurring_bill_payments(recurring_bill_id);
+      CREATE INDEX IF NOT EXISTS recurring_bill_payments_due_date_idx ON recurring_bill_payments(due_date);
+      CREATE INDEX IF NOT EXISTS recurring_bill_payments_status_idx ON recurring_bill_payments(status);
+      CREATE UNIQUE INDEX IF NOT EXISTS unique_bill_due_date_idx ON recurring_bill_payments(recurring_bill_id, due_date);
+    `,
+  },
 ];
 
 async function runMigrations() {

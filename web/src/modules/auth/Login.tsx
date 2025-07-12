@@ -6,14 +6,12 @@ import {useForm} from '@tanstack/react-form'
 import {zodValidator} from '@tanstack/zod-form-adapter'
 import {useMutation} from '@tanstack/react-query'
 import {z} from 'zod'
-import {Eye, EyeSlash} from '@phosphor-icons/react'
 import {InputField} from '@/components/ui/input-field/InputField'
 import {loginSchema} from './schema'
 import {login} from '@/services/auth.service'
 
 export default function Login() {
   const navigate = useNavigate()
-  const [showPassword, setShowPassword] = React.useState(false)
 
   const loginMutation = useMutation({
     mutationFn: login,
@@ -39,9 +37,13 @@ export default function Login() {
   })
 
   return (
-    <div className={classes.box}>
-      <h1 className={'text-preset-1'}>Login</h1>
+    <div className={classes.authForm}>
+      <div className={classes.formHeader}>
+        <h1 className="fin-text-preset-1">Login</h1>
+      </div>
+      
       <form
+        className={classes.form}
         onSubmit={e => {
           e.preventDefault()
           e.stopPropagation()
@@ -56,7 +58,7 @@ export default function Login() {
               onChangeAsyncDebounceMs: 500,
               onChangeAsync: z.string().refine(
                 async value => {
-                  await new Promise(resolve => setTimeout(resolve, 1000))
+                  await new Promise(resolve => setTimeout(resolve, 500))
                   return !value.includes('error')
                 },
                 {
@@ -66,9 +68,15 @@ export default function Login() {
             }}
           >
             {field => (
-              <InputField field={field} label='Email' placeholder='Enter email' type='email' />
+              <InputField 
+                field={field} 
+                label='Email' 
+                placeholder='' 
+                type='email' 
+              />
             )}
           </form.Field>
+          
           <form.Field
             name='password'
             validators={{
@@ -79,24 +87,21 @@ export default function Login() {
               <InputField
                 field={field}
                 label='Password'
-                placeholder='Enter password'
-                type={showPassword ? 'text' : 'password'}
-                icon={
-                  <button
-                    type='button'
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={classes.eyeIcon}
-                  >
-                    {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
-                  </button>
-                }
+                placeholder=''
+                type='password'
+                showPasswordToggle={true}
               />
             )}
           </form.Field>
         </div>
 
-        <Button type='submit' disabled={loginMutation.isPending}>
-          {loginMutation.isPending ? 'Logging in...' : 'Login'}
+        <Button 
+          type='submit' 
+          disabled={loginMutation.isPending}
+          loading={loginMutation.isPending}
+          fullWidth
+        >
+          Login
         </Button>
 
         {loginMutation.isError && (
@@ -107,9 +112,15 @@ export default function Login() {
           </p>
         )}
       </form>
-      <p className={classes.signupText}>
-        Need to create an account? <Link to='/auth/sign-up'>Sign up</Link>
-      </p>
+      
+      <div className={classes.footer}>
+        <p className={classes.footerText}>
+          Need to create an account?{' '}
+          <Link to='/auth/sign-up' className={classes.link}>
+            Sign Up
+          </Link>
+        </p>
+      </div>
     </div>
   )
 }

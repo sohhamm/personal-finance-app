@@ -5,14 +5,12 @@ import {Link, useNavigate} from '@tanstack/react-router'
 import {useForm} from '@tanstack/react-form'
 import {zodValidator} from '@tanstack/zod-form-adapter'
 import {useMutation} from '@tanstack/react-query'
-import {Eye, EyeSlash} from '@phosphor-icons/react'
 import {InputField} from '@/components/ui/input-field/InputField'
 import {signupSchema} from './schema'
 import {signUp} from '@/services/auth.service'
 
 export default function Signup() {
   const navigate = useNavigate()
-  const [showPassword, setShowPassword] = React.useState(false)
 
   const signupMutation = useMutation({
     mutationFn: signUp,
@@ -39,9 +37,13 @@ export default function Signup() {
   })
 
   return (
-    <div className={classes.box}>
-      <h1 className={'text-preset-1'}>Sign Up</h1>
+    <div className={classes.authForm}>
+      <div className={classes.formHeader}>
+        <h1 className="fin-text-preset-1">Sign Up</h1>
+      </div>
+      
       <form
+        className={classes.form}
         onSubmit={e => {
           e.preventDefault()
           e.stopPropagation()
@@ -50,37 +52,47 @@ export default function Signup() {
       >
         <div className={classes.fields}>
           <form.Field name='name' validators={{onChange: signupSchema.shape.name}}>
-            {field => <InputField field={field} label='Name' placeholder='Enter your name' />}
-          </form.Field>
-          <form.Field name='email' validators={{onChange: signupSchema.shape.email}}>
             {field => (
-              <InputField field={field} label='Email' placeholder='Enter your email' type='email' />
+              <InputField 
+                field={field} 
+                label='Name' 
+                placeholder='' 
+              />
             )}
           </form.Field>
+          
+          <form.Field name='email' validators={{onChange: signupSchema.shape.email}}>
+            {field => (
+              <InputField 
+                field={field} 
+                label='Email' 
+                placeholder='' 
+                type='email' 
+              />
+            )}
+          </form.Field>
+          
           <form.Field name='password' validators={{onChange: signupSchema.shape.password}}>
             {field => (
               <InputField
                 field={field}
                 label='Create Password'
-                placeholder='Enter password'
-                type={showPassword ? 'text' : 'password'}
-                icon={
-                  <button
-                    type='button'
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={classes.eyeIcon}
-                  >
-                    {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
-                  </button>
-                }
+                placeholder=''
+                type='password'
+                showPasswordToggle={true}
                 helperText='Passwords must be at least 8 characters'
               />
             )}
           </form.Field>
         </div>
 
-        <Button type='submit' disabled={signupMutation.isPending}>
-          {signupMutation.isPending ? 'Creating Account...' : 'Create Account'}
+        <Button 
+          type='submit' 
+          disabled={signupMutation.isPending}
+          loading={signupMutation.isPending}
+          fullWidth
+        >
+          Create Account
         </Button>
 
         {signupMutation.isError && (
@@ -91,9 +103,15 @@ export default function Signup() {
           </p>
         )}
       </form>
-      <p className={classes.loginText}>
-        Already have an account? <Link to='/auth/login'>Login</Link>
-      </p>
+      
+      <div className={classes.footer}>
+        <p className={classes.footerText}>
+          Already have an account?{' '}
+          <Link to='/auth/login' className={classes.link}>
+            Login
+          </Link>
+        </p>
+      </div>
     </div>
   )
 }

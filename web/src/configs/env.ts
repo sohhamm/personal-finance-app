@@ -1,7 +1,7 @@
 import {z} from 'zod'
 
 const envSchema = z.object({
-  apiBaseUrl: z.string().url(),
+  apiBaseUrl: z.url(),
 })
 
 const envVars = {

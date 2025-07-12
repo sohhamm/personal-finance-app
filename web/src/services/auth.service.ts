@@ -1,6 +1,6 @@
 import {apiClient} from '@/configs/api'
-import {LoginFormValues, SignupFormValues} from '@/pages/auth/schema'
 import {setAccessToken} from '@/stores/auth'
+import type {LoginFormValues, SignupFormValues} from '@/modules/auth/schema'
 
 const commonAuthHelper = async ({
   payload,
@@ -11,9 +11,10 @@ const commonAuthHelper = async ({
 }) => {
   try {
     const response = await apiClient.post(endpoint, payload)
-    const accessToken = response.data
+    const authData = response.data.data // Extract the actual auth data from the wrapped response
+    const accessToken = authData.token
     setAccessToken(accessToken)
-    return accessToken
+    return authData
   } catch (err) {
     console.error(err)
     throw err
@@ -21,9 +22,9 @@ const commonAuthHelper = async ({
 }
 
 export const login = async (payload: LoginFormValues) => {
-  return commonAuthHelper({payload, endpoint: '/auth/login'})
+  return commonAuthHelper({payload, endpoint: '/api/auth/login'})
 }
 
 export const signUp = async (payload: SignupFormValues) => {
-  return commonAuthHelper({payload, endpoint: '/auth/signup'})
+  return commonAuthHelper({payload, endpoint: '/api/auth/signup'})
 }

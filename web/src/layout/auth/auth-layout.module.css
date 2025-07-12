@@ -1,31 +1,78 @@
 .authContainer {
   display: grid;
   grid-template-columns: 560px 1fr;
-  background: var(--color-beige-100);
+  background: var(--beige-100);
   height: 100dvh;
   overflow: hidden;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
 }
 
 .illustrationContainer {
+  background: var(--neutral-900);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--spacing-250);
+  position: relative;
+}
 
-  @media (max-width: 768px) {
-    display: none;
-  }
+.leftContent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  max-width: 450px;
+}
+
+.brandSection {
+  flex-shrink: 0;
+  margin-bottom: var(--spacing-400);
+}
+
+.brandTitle {
+  color: var(--neutral-0);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+  font-family: 'Public Sans', sans-serif;
+}
+
+.heroSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--spacing-400);
 }
 
 .illustrationImage {
-  border-radius: 12px;
-  object-fit: cover;
-  height: 100%;
-  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+}
+
+.heroText {
+  color: var(--neutral-0);
+}
+
+.heroTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 var(--spacing-200) 0;
+  font-family: 'Public Sans', sans-serif;
+}
+
+.heroDescription {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.9;
+  font-family: 'Public Sans', sans-serif;
 }
 
 .formContainer {
@@ -33,4 +80,71 @@
   align-items: center;
   justify-content: center;
   padding: var(--spacing-250);
+  background: var(--neutral-0);
+}
+
+.form {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) {
+  .authContainer {
+    grid-template-columns: 400px 1fr;
+  }
+  
+  .illustrationContainer {
+    padding: var(--spacing-200);
+  }
+  
+  .heroTitle {
+    font-size: 1.5rem;
+  }
+  
+  .brandTitle {
+    font-size: 1.5rem;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .authContainer {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  
+  .illustrationContainer {
+    padding: var(--spacing-150);
+    min-height: auto;
+  }
+  
+  .leftContent {
+    max-width: none;
+  }
+  
+  .brandSection {
+    text-align: center;
+    margin-bottom: var(--spacing-200);
+  }
+  
+  .heroSection {
+    gap: var(--spacing-200);
+  }
+  
+  .illustrationImage {
+    display: none;
+  }
+  
+  .heroTitle {
+    font-size: 1.25rem;
+  }
+  
+  .brandTitle {
+    font-size: 1.25rem;
+  }
+  
+  .formContainer {
+    padding: var(--spacing-200);
+  }
 }

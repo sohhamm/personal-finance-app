@@ -1,0 +1,120 @@
+.authForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+  gap: var(--spacing-300);
+}
+
+.formHeader {
+  margin-bottom: var(--spacing-200);
+}
+
+.formHeader h1 {
+  color: var(--neutral-900);
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-300);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-200);
+}
+
+.footer {
+  text-align: center;
+  margin-top: var(--spacing-150);
+}
+
+.footerText {
+  color: var(--neutral-500);
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.link {
+  color: var(--neutral-900);
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: var(--neutral-500);
+}
+
+.errorMessage {
+  color: var(--red-600);
+  font-size: 0.75rem;
+  margin: 0;
+  text-align: center;
+  padding: var(--spacing-100);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
+}
+
+/* Legacy styles for backward compatibility */
+.box {
+  display: flex;
+  max-width: 560px;
+  padding: var(--spacing-400);
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--spacing-400);
+  border-radius: var(--spacing-150);
+  background: var(--neutral-0);
+  max-height: fit-content;
+}
+
+.signupText,
+.loginText {
+  text-align: center;
+  margin-top: var(--spacing-200);
+  font-size: 0.875rem;
+  color: var(--neutral-500);
+}
+
+.signupText a,
+.loginText a {
+  color: var(--neutral-900);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.eyeIcon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--neutral-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .authForm {
+    max-width: 100%;
+  }
+  
+  .formHeader h1 {
+    font-size: 1.5rem;
+  }
+  
+  .fields {
+    gap: var(--spacing-150);
+  }
+}

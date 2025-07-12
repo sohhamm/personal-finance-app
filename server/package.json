@@ -1,5 +1,5 @@
 {
-  "name": "@hybr1d-tech/server-new",
+  "name": "server",
   "version": "1.0.0",
   "main": "src/index.ts",
   "type": "module",
@@ -14,8 +14,14 @@
     "db:migrate": "bun src/db/migrate.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "finance",
+    "personal-finance-app"
+  ],
+  "author": {
+    "name": "Soham Sarkar",
+    "work_email": "sohamsarkar.work@gmail.com"
+  },
   "license": "ISC",
   "description": "",
   "dependencies": {

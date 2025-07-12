@@ -1,0 +1,1218 @@
+{
+  "info": {
+    "name": "Personal Finance App API",
+    "description": "Complete API collection for Personal Finance App with Bun backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "personal-finance-app-api",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 0
+    }
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "recurringBillId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "paymentId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Check if the API server is running"
+          },
+          "response": []
+        },
+        {
+          "name": "Signup",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const response = pm.response.json();",
+                  "  if (response.success && response.data && response.data.token) {",
+                  "    pm.collectionVariables.set('accessToken', response.data.token);",
+                  "    console.log('Access token saved:', response.data.token);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "signup"]
+            },
+            "description": "Register a new user account"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const response = pm.response.json();",
+                  "  if (response.success && response.data && response.data.token) {",
+                  "    pm.collectionVariables.set('accessToken', response.data.token);",
+                  "    console.log('Access token saved:', response.data.token);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with existing credentials"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "profile"]
+            },
+            "description": "Get current user profile"
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication endpoints for user registration and login"
+    },
+    {
+      "name": "💰 Transactions",
+      "item": [
+        {
+          "name": "Get All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"]
+            },
+            "description": "Get all transactions for the authenticated user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transactions with Pagination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Items per page (default: 10, max: 100)"
+                }
+              ]
+            },
+            "description": "Get transactions with pagination support"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions?search=grocery&category=Groceries&sortBy=amount&sortOrder=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "grocery",
+                  "description": "Search in recipient/sender name"
+                },
+                {
+                  "key": "category",
+                  "value": "Groceries",
+                  "description": "Filter by category"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "amount",
+                  "description": "Sort by: date, amount, name"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc",
+                  "description": "Sort order: asc, desc"
+                }
+              ]
+            },
+            "description": "Search, filter, and sort transactions"
+          },
+          "response": []
+        },
+        {
+          "name": "Filter by Date Range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions?startDate=2024-01-01&endDate=2024-12-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01",
+                  "description": "Start date (ISO 8601 format)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-12-31",
+                  "description": "End date (ISO 8601 format)"
+                }
+              ]
+            },
+            "description": "Filter transactions by date range"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transaction Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "stats"]
+            },
+            "description": "Get transaction statistics (total income, expenses, balance, count)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "categories"]
+            },
+            "description": "Get all available transaction categories"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/{{transactionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "{{transactionId}}"]
+            },
+            "description": "Get a specific transaction by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Transaction (Income)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const response = pm.response.json();",
+                  "  if (response.success && response.data && response.data.id) {",
+                  "    pm.collectionVariables.set('transactionId', response.data.id);",
+                  "    console.log('Transaction ID saved:', response.data.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientSender\": \"Salary Company Inc\",\n  \"category\": \"General\",\n  \"transactionDate\": \"2024-01-15T00:00:00.000Z\",\n  \"amount\": 5000.00,\n  \"transactionType\": \"income\",\n  \"recurring\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"]
+            },
+            "description": "Create a new income transaction"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Transaction (Expense)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientSender\": \"Whole Foods Market\",\n  \"category\": \"Groceries\",\n  \"transactionDate\": \"2024-01-10T00:00:00.000Z\",\n  \"amount\": 125.50,\n  \"transactionType\": \"expense\",\n  \"recurring\": false,\n  \"avatar\": \"https://example.com/avatar.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"]
+            },
+            "description": "Create a new expense transaction"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Transaction",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientSender\": \"Whole Foods Market (Updated)\",\n  \"amount\": 150.00,\n  \"category\": \"Groceries\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/{{transactionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "{{transactionId}}"]
+            },
+            "description": "Update an existing transaction"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Transaction",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/{{transactionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "{{transactionId}}"]
+            },
+            "description": "Delete a transaction"
+          },
+          "response": []
+        }
+      ],
+      "description": "Transaction management endpoints with full CRUD operations, search, filter, and pagination"
+    },
+    {
+      "name": "📊 Budgets",
+      "item": [
+        {
+          "name": "Get All Budgets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/budgets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budgets"]
+            },
+            "description": "Get all budgets for the authenticated user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Budget by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/budgets/{{budgetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budgets", "{{budgetId}}"]
+            },
+            "description": "Get a specific budget by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Budget with Spending",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/budgets/{{budgetId}}/spending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budgets", "{{budgetId}}", "spending"]
+            },
+            "description": "Get budget with current spending and latest transactions"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Budget",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const response = pm.response.json();",
+                  "  if (response.success && response.data && response.data.id) {",
+                  "    pm.collectionVariables.set('budgetId', response.data.id);",
+                  "    console.log('Budget ID saved:', response.data.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"Groceries\",\n  \"maximum\": 500.00,\n  \"theme\": \"#4F46E5\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/budgets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budgets"]
+            },
+            "description": "Create a new budget for a category"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Budget",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maximum\": 600.00,\n  \"theme\": \"#10B981\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/budgets/{{budgetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budgets", "{{budgetId}}"]
+            },
+            "description": "Update an existing budget"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Budget",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/budgets/{{budgetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budgets", "{{budgetId}}"]
+            },
+            "description": "Delete a budget"
+          },
+          "response": []
+        }
+      ],
+      "description": "Budget management with spending tracking and latest transactions"
+    },
+    {
+      "name": "🪙 Savings Pots",
+      "item": [
+        {
+          "name": "Get All Pots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pots"]
+            },
+            "description": "Get all savings pots for the authenticated user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pot by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pots/{{potId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pots", "{{potId}}"]
+            },
+            "description": "Get a specific pot by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pot Progress",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pots/{{potId}}/progress",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pots", "{{potId}}", "progress"]
+            },
+            "description": "Get pot progress towards target"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Pot",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const response = pm.response.json();",
+                  "  if (response.success && response.data && response.data.id) {",
+                  "    pm.collectionVariables.set('potId', response.data.id);",
+                  "    console.log('Pot ID saved:', response.data.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Emergency Fund\",\n  \"target\": 10000.00,\n  \"theme\": \"#EF4444\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pots"]
+            },
+            "description": "Create a new savings pot"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Money to Pot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 500.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pots/{{potId}}/add",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pots", "{{potId}}", "add"]
+            },
+            "description": "Add money to a savings pot"
+          },
+          "response": []
+        },
+        {
+          "name": "Withdraw Money from Pot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pots/{{potId}}/withdraw",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pots", "{{potId}}", "withdraw"]
+            },
+            "description": "Withdraw money from a savings pot"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Pot",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Emergency Fund (Updated)\",\n  \"target\": 15000.00,\n  \"theme\": \"#F59E0B\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pots/{{potId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pots", "{{potId}}"]
+            },
+            "description": "Update an existing pot"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Pot",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pots/{{potId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pots", "{{potId}}"]
+            },
+            "description": "Delete a savings pot"
+          },
+          "response": []
+        }
+      ],
+      "description": "Savings pot management with add/withdraw functionality and progress tracking"
+    },
+    {
+      "name": "🔄 Recurring Bills",
+      "item": [
+        {
+          "name": "Get All Recurring Bills",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills"]
+            },
+            "description": "Get all recurring bills for the authenticated user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Recurring Bills with Search & Sort",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills?search=Netflix&sortBy=latest&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Netflix",
+                  "description": "Search bills by name"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "latest",
+                  "description": "Sort by: latest, oldest, a-z, z-a, highest, lowest"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Items per page (default: 10, max: 100)"
+                }
+              ]
+            },
+            "description": "Search and sort recurring bills with pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bills Due Soon",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills/due-soon",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills", "due-soon"]
+            },
+            "description": "Get bills due within 5 days of latest transaction date"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Recurring Bill by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills/{{recurringBillId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills", "{{recurringBillId}}"]
+            },
+            "description": "Get a specific recurring bill with payment history"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Recurring Bill",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const response = pm.response.json();",
+                  "  if (response.success && response.data && response.data.id) {",
+                  "    pm.collectionVariables.set('recurringBillId', response.data.id);",
+                  "    console.log('Recurring Bill ID saved:', response.data.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Netflix Subscription\",\n  \"amount\": 15.99,\n  \"dueDay\": 15,\n  \"category\": \"Entertainment\",\n  \"avatar\": \"https://example.com/netflix-avatar.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills"]
+            },
+            "description": "Create a new recurring bill"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Recurring Bill",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Netflix Premium\",\n  \"amount\": 19.99,\n  \"dueDay\": 15,\n  \"category\": \"Entertainment\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills/{{recurringBillId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills", "{{recurringBillId}}"]
+            },
+            "description": "Update an existing recurring bill"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Bill Payment as Paid",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionId\": \"{{transactionId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills/payments/{{paymentId}}/mark-paid",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills", "payments", "{{paymentId}}", "mark-paid"]
+            },
+            "description": "Mark a recurring bill payment as paid"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Recurring Bill",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills/{{recurringBillId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills", "{{recurringBillId}}"]
+            },
+            "description": "Delete a recurring bill"
+          },
+          "response": []
+        }
+      ],
+      "description": "Recurring bills management with payment tracking, search, and sorting functionality"
+    },
+    {
+      "name": "📊 Overview Dashboard",
+      "item": [
+        {
+          "name": "Get Overview Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/overview",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "overview"]
+            },
+            "description": "Get complete dashboard overview with balance, income, expenses, pots, budgets, and recurring bills"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Monthly Trends",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/overview/trends?months=6",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "overview", "trends"],
+              "query": [
+                {
+                  "key": "months",
+                  "value": "6",
+                  "description": "Number of months to get trends for (1-24, default: 6)"
+                }
+              ]
+            },
+            "description": "Get monthly income and expense trends for historical analysis"
+          },
+          "response": []
+        }
+      ],
+      "description": "Dashboard overview endpoints with aggregated financial data and trends"
+    },
+    {
+      "name": "🔄 Data Seeding",
+      "item": [
+        {
+          "name": "Create Sample Transactions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"recipientSender\": \"Starbucks\",\n    \"category\": \"Dining Out\",\n    \"transactionDate\": \"2024-01-01T10:30:00.000Z\",\n    \"amount\": 15.50,\n    \"transactionType\": \"expense\",\n    \"recurring\": false\n  },\n  {\n    \"recipientSender\": \"Netflix\",\n    \"category\": \"Entertainment\",\n    \"transactionDate\": \"2024-01-01T00:00:00.000Z\",\n    \"amount\": 15.99,\n    \"transactionType\": \"expense\",\n    \"recurring\": true\n  },\n  {\n    \"recipientSender\": \"Freelance Work\",\n    \"category\": \"General\",\n    \"transactionDate\": \"2024-01-05T00:00:00.000Z\",\n    \"amount\": 2500.00,\n    \"transactionType\": \"income\",\n    \"recurring\": false\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"]
+            },
+            "description": "Create multiple sample transactions for testing"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Sample Budgets",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"category\": \"Entertainment\",\n    \"maximum\": 200.00,\n    \"theme\": \"#8B5CF6\"\n  },\n  {\n    \"category\": \"Dining Out\",\n    \"maximum\": 300.00,\n    \"theme\": \"#F59E0B\"\n  },\n  {\n    \"category\": \"Bills\",\n    \"maximum\": 800.00,\n    \"theme\": \"#EF4444\"\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/budgets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "budgets"]
+            },
+            "description": "Create multiple sample budgets for testing"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Sample Pots",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"name\": \"Vacation Fund\",\n    \"target\": 5000.00,\n    \"theme\": \"#06B6D4\"\n  },\n  {\n    \"name\": \"New Laptop\",\n    \"target\": 2000.00,\n    \"theme\": \"#84CC16\"\n  },\n  {\n    \"name\": \"Gift Fund\",\n    \"target\": 1000.00,\n    \"theme\": \"#EC4899\"\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pots"]
+            },
+            "description": "Create multiple sample pots for testing"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Sample Recurring Bills",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Spark Electric Solutions\",\n  \"amount\": 100.00,\n  \"dueDay\": 2,\n  \"category\": \"Bills\",\n  \"avatar\": \"https://example.com/spark-electric.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills"]
+            },
+            "description": "Create sample recurring bill (Spark Electric Solutions)"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Sample Recurring Bills (Multiple)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"name\": \"Serenity Spa & Wellness\",\n    \"amount\": 30.00,\n    \"dueDay\": 3,\n    \"category\": \"Personal Care\"\n  },\n  {\n    \"name\": \"Elevate Education\",\n    \"amount\": 50.00,\n    \"dueDay\": 4,\n    \"category\": \"Education\"\n  },\n  {\n    \"name\": \"Pixel Playground\",\n    \"amount\": 10.00,\n    \"dueDay\": 11,\n    \"category\": \"Entertainment\"\n  },\n  {\n    \"name\": \"Nimbus Data Storage\",\n    \"amount\": 9.99,\n    \"dueDay\": 21,\n    \"category\": \"Bills\"\n  },\n  {\n    \"name\": \"ByteWise\",\n    \"amount\": 49.99,\n    \"dueDay\": 23,\n    \"category\": \"Education\"\n  },\n  {\n    \"name\": \"EcoFuel Energy\",\n    \"amount\": 35.00,\n    \"dueDay\": 29,\n    \"category\": \"Bills\"\n  },\n  {\n    \"name\": \"Aqua Flow Utilities\",\n    \"amount\": 100.00,\n    \"dueDay\": 30,\n    \"category\": \"Bills\"\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills"]
+            },
+            "description": "Create multiple sample recurring bills for testing"
+          },
+          "response": []
+        }
+      ],
+      "description": "Helper requests to create sample data for testing the application"
+    },
+    {
+      "name": "🧪 Test Scenarios",
+      "item": [
+        {
+          "name": "Test Pagination (Page 2)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions?page=2&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Test pagination functionality"
+          },
+          "response": []
+        },
+        {
+          "name": "Test Validation Error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientSender\": \"\",\n  \"category\": \"InvalidCategory\",\n  \"amount\": -100\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"]
+            },
+            "description": "Test validation error handling"
+          },
+          "response": []
+        },
+        {
+          "name": "Test Unauthorized Access",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"]
+            },
+            "description": "Test unauthorized access without token"
+          },
+          "response": []
+        },
+        {
+          "name": "Test Complex Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions?category=Entertainment&sortBy=amount&sortOrder=desc&startDate=2024-01-01&endDate=2024-12-31&search=Netflix",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "Entertainment"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "amount"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-12-31"
+                },
+                {
+                  "key": "search",
+                  "value": "Netflix"
+                }
+              ]
+            },
+            "description": "Test complex filtering with multiple parameters"
+          },
+          "response": []
+        },
+        {
+          "name": "Test Recurring Bills Search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills?search=electric&sortBy=highest",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "electric",
+                  "description": "Search for electric-related bills"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "highest",
+                  "description": "Sort by highest amount"
+                }
+              ]
+            },
+            "description": "Test recurring bills search and sorting functionality"
+          },
+          "response": []
+        },
+        {
+          "name": "Test All Sorting Options",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recurring-bills?sortBy=z-a",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recurring-bills"],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "z-a",
+                  "description": "Test Z to A sorting (change to: latest, oldest, a-z, highest, lowest)"
+                }
+              ]
+            },
+            "description": "Test different sorting options for recurring bills"
+          },
+          "response": []
+        }
+      ],
+      "description": "Test scenarios for edge cases and error handling"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-set collection variables if not present",
+          "if (!pm.collectionVariables.get('baseUrl')) {",
+          "  pm.collectionVariables.set('baseUrl', 'http://localhost:3000');",
+          "}"
+        ]
+      }
+    }
+  ]
+}

@@ -1,5 +1,35 @@
 :root {
-  /* colors */
+  /* Neutral colors */
+  --neutral-900: #201f24;
+  --neutral-500: #696868;
+  --neutral-300: #b3b3b3;
+  --neutral-100: #f2f2f2;
+  --neutral-0: #ffffff;
+
+  /* Beige colors */
+  --beige-500: #98908b;
+  --beige-100: #f8f4f0;
+
+  /* Secondary colors */
+  --green-500: #277c78;
+  --yellow-300: #f2cdac;
+  --cyan-300: #82c9d7;
+  --navy-300: #626070;
+  --red-600: #c94736;
+  --purple-500: #826cb0;
+
+  /* Other colors */
+  --violet-300: #af81ba;
+  --turquoise-500: #597c7c;
+  --brown-500: #93674f;
+  --magenta-500: #934f6f;
+  --blue-600: #3f82b2;
+  --navy-grey-300: #97a0ac;
+  --army-green-500: #7f9161;
+  --gold-500: #cab361;
+  --orange-500: #be6c49;
+
+  /* Legacy color mappings for existing components */
   --color-orange: #be6c49;
   --color-red: #c94736;
   --color-gold: #cab361;
@@ -23,7 +53,19 @@
   --color-navy-grey: #97a0ac;
   --color-pink: #af81ba;
 
-  /* spacing */
+  /* Semantic colors */
+  --primary: var(--neutral-900);
+  --primary-foreground: var(--neutral-0);
+  --background: var(--neutral-0);
+  --foreground: var(--neutral-900);
+  --muted: var(--beige-100);
+  --muted-foreground: var(--neutral-500);
+  --border: var(--beige-500);
+  --input: var(--beige-500);
+  --destructive: var(--red-600);
+  --destructive-foreground: var(--neutral-0);
+
+  /* Spacing */
   --spacing-500: 40px;
   --spacing-400: 32px;
   --spacing-300: 24px;
@@ -32,4 +74,32 @@
   --spacing-150: 12px;
   --spacing-100: 8px;
   --spacing-50: 4px;
+
+  /* Border radius */
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Font family */
+  --font-sans: 'Public Sans', sans-serif;
+
+  /* Box shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--neutral-900);
+    --foreground: var(--neutral-0);
+    --primary: var(--neutral-0);
+    --primary-foreground: var(--neutral-900);
+    --muted: var(--neutral-500);
+    --muted-foreground: var(--neutral-300);
+    --border: var(--neutral-500);
+    --input: var(--neutral-500);
+  }
 }

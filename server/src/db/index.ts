@@ -49,3 +49,28 @@ export interface Pot {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface RecurringBill {
+  id: string;
+  user_id: string;
+  name: string;
+  amount: string;
+  due_day: number;
+  category: string;
+  avatar?: string;
+  is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface RecurringBillPayment {
+  id: string;
+  recurring_bill_id: string;
+  transaction_id?: string;
+  due_date: Date;
+  paid_date?: Date;
+  amount: string;
+  status: 'pending' | 'paid' | 'overdue';
+  created_at: Date;
+  updated_at: Date;
+}
